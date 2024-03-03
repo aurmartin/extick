@@ -1,6 +1,7 @@
 defmodule Extick.Tickets.Ticket do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query, warn: false
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -12,6 +13,7 @@ defmodule Extick.Tickets.Ticket do
     field :priority, :integer
 
     belongs_to :project, Extick.Projects.Project
+    belongs_to :iteration, Extick.Projects.Iteration
     belongs_to :reporter, Extick.Accounts.User
     belongs_to :assignee, Extick.Accounts.User
 
@@ -56,5 +58,21 @@ defmodule Extick.Tickets.Ticket do
 
   def ticket_priorities do
     [1, 2, 3, 4, 5]
+  end
+
+  def list_by_iteration_query(iteration_id) do
+    from(t in Extick.Tickets.Ticket,
+      where: t.iteration_id == ^iteration_id,
+      order_by: [desc: t.inserted_at],
+      select: t
+    )
+  end
+
+  def list_by_project_query(project_id) do
+    from(t in Extick.Tickets.Ticket,
+      where: t.project_id == ^project_id,
+      order_by: [desc: t.inserted_at],
+      select: t
+    )
   end
 end

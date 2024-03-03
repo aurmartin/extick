@@ -11,6 +11,7 @@ defmodule Extick.Repo.Migrations.CreateTickets do
       add :priority, :integer
 
       add :project_id, references(:projects, on_delete: :delete_all)
+      add :iteration_id, references(:iterations, on_delete: :nothing)
       add :reporter_id, references(:users, on_delete: :nothing)
       add :assignee_id, references(:users, on_delete: :nothing)
 

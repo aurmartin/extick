@@ -229,7 +229,7 @@ defmodule ExtickWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded border-2 border-teal-500 bg-teal-50 py-2 px-3",
+        "phx-submit-loading:opacity-75 rounded border-2 border-teal-500 bg-teal-50 py-1 px-2",
         "font-semibold text-teal-950",
         "hover:bg-teal-100 focus:border-teal-600 outline-none",
         @class

@@ -1,28 +1,58 @@
 <.header>
-  <%= @project.name %>
+  Backlog
 
   <.link patch={~p"/projects/#{@project}/backlog/new_ticket"}>
     <.button class="ml-4 text-base">Create ticket</.button>
   </.link>
 </.header>
 
-<div class="flex gap-4 mt-4">
-  <.table
-    id="tickets"
-    rows={@tickets}
-    row_click={
-      fn ticket -> JS.patch(~p"/projects/#{@project}/backlog/edit_ticket/#{ticket.id}") end
-    }
-  >
-    <:col :let={ticket} label="Title"><%= ticket.title %></:col>
-    <:col :let={ticket} label="Type"><%= ticket.type %></:col>
-    <:col :let={ticket} label="Status"><%= ticket.status %></:col>
-  </.table>
+<%= for iteration <- (@iterations ++ [nil]) do %>
+
+<% tickets = Enum.filter(@tickets, &(if iteration, do: &1.iteration_id == iteration.id, else: &1.iteration_id == nil)) %>
+
+<%= if iteration do %>
+  <h2 class="mt-2 py-2 font-bold"><%= iteration.name %> <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span></h2>
+<% else %>
+  <div class="flex mt-2 py-2 items-baseline">
+    <h2 class="font-bold">Backlog <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span></h2>
+
+    <.link class="ml-auto" patch={~p"/projects/#{@project}/backlog/new_iteration"}>
+      <.button>Create iteration</.button>
+    </.link>
+  </div>
+<% end %>
+
+<div class="flex flex-col mt-1">
+  <%= for ticket <- tickets do %>
+    <div class="flex border border-gray-400 mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100">
+      <div><%= ticket.title %></div>
+
+      <div class="ml-auto">
+        <div class={[
+          "rounded px-1 py-0.5 text-xs uppercase font-bold",
+          case ticket.status do
+            "backlog" -> "bg-gray-300"
+            "open" -> "bg-green-300"
+            "in_progress" -> "bg-yellow-300"
+            "closed" -> "bg-red-300"
+          end,
+        ]}>
+          <%= Extick.Tickets.format_status(ticket.status) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="flex border border-gray-400 mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100">
+    <div class="text-gray-500">+ Create ticket</div>
+  </div>
 </div>
+
+<% end %>
 
 <.modal
   :if={@live_action in [:new_ticket, :edit_ticket]}
-  id="project-modal"
+  id="project-ticket-modal"
   show
   on_cancel={JS.patch(~p"/projects/#{@project}/backlog")}
 >
@@ -40,5 +70,22 @@
     patch={~p"/projects/#{@project}/backlog"}
     current_user={@current_user}
     project={@project}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :new_iteration}
+  id="project-iteration-modal"
+  show
+  on_cancel={JS.patch(~p"/projects/#{@project}/backlog")}
+>
+  <.live_component
+    module={ExtickWeb.ProjectLive.IterationFormComponent}
+    id={:new}
+    title="Create iteration"
+    action={:new}
+    patch={~p"/projects/#{@project}/backlog"}
+    current_user={@current_user}
+    iteration={@iteration}
   />
 </.modal>
