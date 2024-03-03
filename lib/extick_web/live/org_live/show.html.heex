@@ -1,0 +1,43 @@
+<.header>
+  Organisation <%= @org.name %>
+  <%!-- <:actions>
+    <.link patch={~p"/orgs/#{@org}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit org</.button>
+    </.link>
+  </:actions> --%>
+</.header>
+
+<.table
+  id="projects"
+  rows={@org.projects}
+  row_click={fn project -> JS.navigate(~p"/orgs/#{@org}/projects/#{project}") end}
+>
+  <:col :let={project} label="Project"><%= project.name %></:col>
+  <:action :let={project}>
+    <div class="sr-only">
+      <.link navigate={~p"/orgs/#{@org}/projects/#{project}"}>Show</.link>
+    </div>
+    <.link patch={~p"/orgs/#{@org}/show/edit_project/#{project}"}>Edit</.link>
+  </:action>
+  <:action :let={project}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: project.id}) |> hide("##{project.id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.back navigate={~p"/orgs"}>Back to orgs</.back>
+
+<.modal :if={@live_action == :edit} id="org-modal" show on_cancel={JS.patch(~p"/orgs/#{@org}")}>
+  <.live_component
+    module={ExtickWeb.OrgLive.FormComponent}
+    id={@org.id}
+    title={@page_title}
+    action={@live_action}
+    org={@org}
+    patch={~p"/orgs/#{@org}"}
+  />
+</.modal>
