@@ -25,25 +25,25 @@ users = [
   }
 ]
 
-users = Enum.map(users, fn user ->
-  {:ok, user} = Accounts.register_user(user)
-  user
-end)
+users =
+  Enum.map(users, fn user ->
+    {:ok, user} = Accounts.register_user(user)
+    user
+  end)
 
 alias Extick.Orgs
 
 orgs = [
   %{
-    name: "DevOrg",
+    name: "DevOrg"
   }
 ]
 
-orgs = Enum.map(orgs, fn org ->
-  {:ok, org} = Orgs.create_org(org)
-  org
-end)
-
-Orgs.add_member(Enum.at(orgs, 0), Enum.at(users, 0))
+orgs =
+  Enum.map(orgs, fn org ->
+    {:ok, org} = Orgs.create_org(Enum.at(users, 0), org)
+    org
+  end)
 
 alias Extick.Projects
 
@@ -62,6 +62,39 @@ projects = [
   }
 ]
 
-Enum.each(projects, fn project ->
-  Projects.create_project(project)
-end)
+projects =
+  Enum.map(projects, fn project ->
+    {:ok, project} = Projects.create_project(project)
+    project
+  end)
+
+alias Extick.Tickets
+
+project = Enum.at(projects, 0)
+reporter = Enum.at(users, 0)
+assignee = Enum.at(users, 1)
+
+tickets = [
+  %{
+    title: "Ticket 1",
+    description: "Ticket 1 description",
+    status: "backlog",
+    project_id: project.id,
+    reporter_id: reporter.id,
+    assignee_id: assignee.id
+  },
+  %{
+    title: "Ticket 2",
+    description: "Ticket 2 description",
+    status: "open",
+    project_id: project.id,
+    reporter_id: reporter.id,
+    assignee_id: assignee.id
+  }
+]
+
+tickets =
+  Enum.map(tickets, fn ticket ->
+    {:ok, ticket} = Tickets.create_ticket(ticket)
+    ticket
+  end)

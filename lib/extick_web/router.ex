@@ -66,14 +66,17 @@ defmodule ExtickWeb.Router do
       # live "/projects/new", ProjectLive.Index, :new
       # live "/projects/:id/edit", ProjectLive.Index, :edit
 
-      # live "/projects/:id", ProjectLive.Show, :show
+      live "/projects/:id", ProjectLive.Show, :show
       # live "/projects/:id/show/edit", ProjectLive.Show, :edit
 
       live "/orgs", OrgLive.Index, :index
       live "/orgs/new", OrgLive.Index, :new
+      live "/orgs/:id/edit", OrgLive.Index, :edit
 
       live "/orgs/:id", OrgLive.Show, :show
       live "/orgs/:id/show/edit", OrgLive.Show, :edit
+
+      live "/boards/:id", BoardLive.Show, :show
     end
   end
 

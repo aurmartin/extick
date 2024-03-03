@@ -12,14 +12,11 @@
   rows={@org.projects}
 >
   <:col :let={project} label="Project">
-    <.link href={~p"/orgs/#{@org}/projects/#{project}"} class="hover:underline">
+    <.link href={~p"/boards/#{project.default_board_id}"} class="hover:underline">
       <%= project.name %>
     </.link>
   </:col>
   <:action :let={project}>
-    <div class="sr-only">
-      <.link navigate={~p"/orgs/#{@org}/projects/#{project}"}>Show</.link>
-    </div>
     <.link patch={~p"/orgs/#{@org}/show/edit_project/#{project}"}>Edit</.link>
   </:action>
   <:action :let={project}>

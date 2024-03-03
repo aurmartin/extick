@@ -9,6 +9,8 @@ defmodule Extick.Projects.Project do
     field :key, :string
     belongs_to :org, Extick.Orgs.Org
 
+    field :default_board_id, :binary_id
+
     timestamps(type: :utc_datetime)
   end
 
@@ -18,6 +20,12 @@ defmodule Extick.Projects.Project do
     |> cast(attrs, [:key, :name, :description, :org_id])
     |> validate_required([:key, :name, :description, :org_id])
     |> validate_key()
+  end
+
+  def set_default_board_changeset(project, attrs) do
+    project
+    |> cast(attrs, [:default_board_id])
+    |> validate_required([:default_board_id])
   end
 
   defp validate_key(changeset) do

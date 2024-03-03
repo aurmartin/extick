@@ -428,7 +428,7 @@ defmodule ExtickWeb.CoreComponents do
   def header(assigns) do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
+      <div class="py-2">
         <h1 class="text-2xl text-zinc-800">
           <%= render_slot(@inner_block) %>
         </h1>
