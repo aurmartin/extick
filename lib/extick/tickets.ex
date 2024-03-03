@@ -57,8 +57,12 @@ defmodule Extick.Tickets do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_ticket(attrs \\ %{}) do
-    %Ticket{}
+  def create_ticket(user, project, attrs \\ %{}) do
+    %Ticket{
+      project_id: project.id,
+      reporter_id: user.id,
+      assignee_id: user.id
+    }
     |> Ticket.changeset(attrs)
     |> Repo.insert()
   end

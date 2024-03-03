@@ -39,6 +39,17 @@ defmodule ExtickWeb.BoardLive.Show do
     |> assign(:tickets, tickets)
   end
 
+  defp apply_action(socket, :new_ticket, %{"id" => id}) do
+    board = Boards.get_board!(id) |> Repo.preload(:project)
+    tickets = Boards.get_tickets(board)
+
+    socket
+    |> assign(:page_title, "New Ticket")
+    |> assign(:board, board)
+    |> assign(:ticket, %Tickets.Ticket{})
+    |> assign(:tickets, tickets)
+  end
+
   @impl true
   def handle_event("move_ticket", params, socket) do
     %{

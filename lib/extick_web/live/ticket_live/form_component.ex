@@ -74,7 +74,9 @@ defmodule ExtickWeb.TicketLive.FormComponent do
   end
 
   defp save_ticket(socket, :new, ticket_params) do
-    case Tickets.create_ticket(ticket_params) do
+    %{project: project, current_user: current_user} = socket.assigns
+
+    case Tickets.create_ticket(current_user, project, ticket_params) do
       {:ok, ticket} ->
         notify_parent({:saved, ticket})
 

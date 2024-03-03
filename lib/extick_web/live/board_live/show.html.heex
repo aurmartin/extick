@@ -1,5 +1,9 @@
 <.header>
   <%= @board.project.name %>
+
+  <.link patch={~p"/boards/#{@board}/new_ticket"}>
+    <.button class="ml-4 text-base">Create ticket</.button>
+  </.link>
 </.header>
 
 <div class="flex gap-4 mt-4">
@@ -8,7 +12,7 @@
   <.board_column status="done" tickets={@tickets} board={@board} />
 </div>
 
-<.modal :if={@live_action in [:edit_ticket]} id="board-modal" show on_cancel={JS.patch(~p"/boards/#{@board}")}>
+<.modal :if={@live_action in [:new_ticket, :edit_ticket]} id="board-modal" show on_cancel={JS.patch(~p"/boards/#{@board}")}>
   <.live_component
     module={ExtickWeb.TicketLive.FormComponent}
     id={@ticket.id || :new}
@@ -20,5 +24,6 @@
     ticket={@ticket}
     patch={~p"/boards/#{@board}"}
     current_user={@current_user}
+    project={@board.project}
   />
 </.modal>

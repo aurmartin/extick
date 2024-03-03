@@ -15,7 +15,7 @@ defmodule ExtickWeb.BoardLive.Components do
     <div class="rounded bg-gray-100 p-2 w-1/3 flex flex-col">
       <h2 class="text-xs text-gray-700 uppercase mb-2 p-1"><%= Extick.Tickets.format_status(@status) %></h2>
 
-      <div id={@status} phx-hook="Sortable" data-list_id={@status} class="flex-grow">
+      <div id={@status} phx-hook="Sortable" data-list_id={@status} class="flex-grow flex flex-col gap-2">
         <%= for ticket <- @tickets do %>
           <div
             class="bg-white border border-transparent rounded shadow shadow-gray-400 p-2 transition cursor-pointer hover:bg-gray-100 hover:border-gray-400"
