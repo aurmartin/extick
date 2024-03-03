@@ -1,11 +1,11 @@
-defmodule ExtickWeb.BoardLive.Components do
+defmodule ExtickWeb.ProjectLive.Components do
   use ExtickWeb, :component
 
   alias Phoenix.LiveView.JS
 
   attr :status, :string
   attr :tickets, :list
-  attr :board, :map
+  attr :project, :map
 
   def board_column(assigns) do
     tickets =
@@ -23,7 +23,7 @@ defmodule ExtickWeb.BoardLive.Components do
         <%= for ticket <- @tickets do %>
           <div
             class="bg-white border border-transparent rounded shadow shadow-gray-400 p-2 transition cursor-pointer hover:bg-gray-100 hover:border-gray-400"
-            phx-click={JS.patch(~p"/boards/#{@board}/edit_ticket/#{ticket}")} data-id={ticket.id}
+            phx-click={JS.patch(~p"/projects/#{@project}/current_iteration/edit_ticket/#{ticket}")} data-id={ticket.id}
           >
             <h2
              class={[

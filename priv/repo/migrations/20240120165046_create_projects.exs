@@ -8,7 +8,6 @@ defmodule Extick.Repo.Migrations.CreateProjects do
       add :name, :string, null: false
       add :description, :string, null: false
       add :org_id, references(:orgs, type: :binary_id), null: false
-      add :default_board_id, references(:boards, type: :binary_id)
 
       timestamps(type: :utc_datetime)
     end

@@ -13,7 +13,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               (if @project_page == "current_sprint", do: "bg-gray-200")
             ]}
-            href={~p"/boards/#{@project.default_board_id}"}
+            href={~p"/projects/#{@project}/current_iteration"}
           >
             Current iteration
           </.link>
@@ -24,7 +24,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               (if @project_page == "backlog", do: "bg-gray-200")
             ]}
-            href={~p"/boards/#{@project.default_board_id}"}
+            href={~p"/projects/#{@project}/current_iteration"}
           >
             Backlog
           </.link>
@@ -35,7 +35,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               (if @project_page == "iterations", do: "bg-gray-200")
             ]}
-            href={~p"/boards/#{@project.default_board_id}"}
+            href={~p"/projects/#{@project}/current_iteration"}
           >
             Iterations
           </.link>
@@ -46,7 +46,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               (if @project_page == "iterations", do: "bg-gray-200")
             ]}
-            href={~p"/boards/#{@project.default_board_id}"}
+            href={~p"/projects/#{@project}/current_iteration"}
           >
             Reports
           </.link>
@@ -57,7 +57,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               (if @project_page == "iterations", do: "bg-gray-200")
             ]}
-            href={~p"/boards/#{@project.default_board_id}"}
+            href={~p"/projects/#{@project}/current_iteration"}
           >
             Settings
           </.link>

@@ -12,7 +12,7 @@
   rows={@org.projects}
 >
   <:col :let={project} label="Project">
-    <.link href={~p"/boards/#{project.default_board_id}"} class="hover:underline">
+    <.link href={~p"/projects/#{project}/current_iteration"} class="hover:underline">
       <%= project.name %>
     </.link>
   </:col>

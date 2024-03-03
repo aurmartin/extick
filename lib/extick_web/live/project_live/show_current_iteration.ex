@@ -1,20 +1,19 @@
-defmodule ExtickWeb.BoardLive.Show do
+defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   use ExtickWeb, {:live_view, layout: :project}
 
   alias Extick.Tickets
-  alias Extick.Boards
-  alias Extick.Repo
+  alias Extick.Projects
 
-  import ExtickWeb.BoardLive.Components
+  import ExtickWeb.ProjectLive.Components
 
   @impl true
   def mount(params, _session, socket) do
     %{"id" => id} = params
 
-    board = Boards.get_board!(id) |> Repo.preload(:project)
-    tickets = Boards.get_tickets(board)
+    project = Projects.get_project!(id)
+    tickets = Tickets.list_tickets_by_project_and_statuses(id, ["open", "in_progress", "done"])
 
-    {:ok, assign(socket, project: board.project, board: board, tickets: tickets, project_page: "backlog")}
+    {:ok, assign(socket, project: project, tickets: tickets, project_page: "backlog")}
   end
 
   @impl true
@@ -33,10 +32,10 @@ defmodule ExtickWeb.BoardLive.Show do
   end
 
   defp apply_action(socket, :new_ticket, _params) do
-    %{board: board, current_user: current_user} = socket.assigns
+    %{project: project, current_user: current_user} = socket.assigns
 
     ticket = %Tickets.Ticket{
-      project_id: board.project.id,
+      project_id: project.id,
       priority: 3,
       reporter_id: current_user.id
     }
@@ -57,9 +56,15 @@ defmodule ExtickWeb.BoardLive.Show do
     ticket = Tickets.get_ticket!(id)
     {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
 
-    tickets = Boards.get_tickets(socket.assigns.board)
+    tickets = Tickets.list_tickets_by_project_and_statuses(params.project_id, ["open", "in_progress", "done"])
 
     {:noreply, assign(socket, tickets: tickets)}
+  end
+
+  @impl true
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, _ticket}}, socket) do
+    tickets = Tickets.list_tickets_by_project_and_statuses(socket.assigns.project.id, ["open", "in_progress", "done"])
+    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end
 
   defp page_title(:show), do: "Show Board"

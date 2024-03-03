@@ -67,6 +67,9 @@ defmodule ExtickWeb.Router do
       # live "/projects/:id/edit", ProjectLive.Index, :edit
 
       live "/projects/:id", ProjectLive.Show, :show
+      live "/projects/:id/current_iteration", ProjectLive.ShowCurrentIteration, :show
+      live "/projects/:id/current_iteration/new_ticket", ProjectLive.ShowCurrentIteration, :new_ticket
+      live "/projects/:id/current_iteration/edit_ticket/:ticket_id", ProjectLive.ShowCurrentIteration, :edit_ticket
       # live "/projects/:id/show/edit", ProjectLive.Show, :edit
 
       live "/orgs", OrgLive.Index, :index
@@ -75,10 +78,6 @@ defmodule ExtickWeb.Router do
 
       live "/orgs/:id", OrgLive.Show, :show
       live "/orgs/:id/show/edit", OrgLive.Show, :edit
-
-      live "/boards/:id", BoardLive.Show, :show
-      live "/boards/:id/new_ticket", BoardLive.Show, :new_ticket
-      live "/boards/:id/edit_ticket/:ticket_id", BoardLive.Show, :edit_ticket
     end
   end
 
