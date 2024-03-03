@@ -7,7 +7,7 @@ source /srv/extick/env.sh
 export MIX_ENV=prod
 export PHX_SERVER=true
 export PHX_PORT=4000
-export PHX_HOST=vps-28e1f96e.vps.ovh.net
+export PHX_HOST=extick.aurmartin.fr
 
 mix deps.get --only prod
 mix compile
