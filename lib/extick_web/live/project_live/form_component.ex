@@ -19,6 +19,9 @@ defmodule ExtickWeb.ProjectLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <.input field={@form[:type]} type="hidden" />
+        <.input field={@form[:org_id]} type="hidden" />
+
         <.input field={@form[:key]} type="text" label="Key" />
         <.input field={@form[:name]} type="text" label="Name" />
         <.input field={@form[:description]} type="text" label="Description" />
@@ -62,7 +65,7 @@ defmodule ExtickWeb.ProjectLive.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Project updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_navigate(to: socket.assigns.to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
@@ -77,7 +80,7 @@ defmodule ExtickWeb.ProjectLive.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Project created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_navigate(to: socket.assigns.to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

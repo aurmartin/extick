@@ -2,6 +2,7 @@ defmodule ExtickWeb.Router do
   use ExtickWeb, :router
 
   import ExtickWeb.UserAuth
+  import ExtickWeb.Org
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -61,9 +62,23 @@ defmodule ExtickWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 
-      # live "/projects", ProjectLive.Index, :index
-      # live "/projects/new", ProjectLive.Index, :new
-      # live "/projects/:id/edit", ProjectLive.Index, :edit
+      live "/orgs", OrgLive.Index, :index
+      live "/orgs/new", OrgLive.Index, :new
+      live "/orgs/:id/edit", OrgLive.Index, :edit
+    end
+
+    get "/orgs/:id/select", OrgController, :select
+  end
+
+  scope "/", ExtickWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_current_org]
+
+    live_session :require_current_org,
+      on_mount: [{ExtickWeb.UserAuth, :ensure_authenticated}, {ExtickWeb.Org, :require_current_org}] do
+
+      live "/projects", ProjectLive.Index, :index
+      live "/projects/new", ProjectLive.New
+      live "/projects/:id/edit", ProjectLive.Index, :edit
 
       live "/projects/:id", ProjectLive.Show, :show
       live "/projects/:id/current_iteration", ProjectLive.ShowCurrentIteration, :show
@@ -85,15 +100,6 @@ defmodule ExtickWeb.Router do
       live "/projects/:id/backlog/edit_ticket/:ticket_id",
            ProjectLive.ShowBacklog,
            :edit_ticket
-
-      # live "/projects/:id/show/edit", ProjectLive.Show, :edit
-
-      live "/orgs", OrgLive.Index, :index
-      live "/orgs/new", OrgLive.Index, :new
-      live "/orgs/:id/edit", OrgLive.Index, :edit
-
-      live "/orgs/:id", OrgLive.Show, :show
-      live "/orgs/:id/show/edit", OrgLive.Show, :edit
     end
   end
 

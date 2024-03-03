@@ -10,7 +10,7 @@
 <.table
   id="orgs"
   rows={@streams.orgs}
-  row_click={fn {_id, org} -> JS.navigate(~p"/orgs/#{org}") end}
+  row_click={fn {_id, org} -> JS.navigate(~p"/orgs/#{org.id}/select") end}
 >
   <:col :let={{_id, org}} label="Organization"><%= org.name %></:col>
 </.table>

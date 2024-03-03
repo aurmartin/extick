@@ -6,7 +6,7 @@ defmodule ExtickWeb.ProjectLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    projects = Projects.list_projects_by_owner(socket.assigns.current_user.id)
+    projects = Projects.list_projects_by_org(socket.assigns.current_org_id)
     {:ok, stream(socket, :projects, projects)}
   end
 

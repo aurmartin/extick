@@ -8,8 +8,8 @@ defmodule Extick.Projects do
 
   alias Extick.Projects.Project
 
-  def list_projects_by_owner(owner_id) do
-    Repo.all(from p in Project, where: p.owner_id == ^owner_id)
+  def list_projects_by_org(org_id) do
+    Repo.all(from p in Project, where: p.org_id == ^org_id)
   end
 
   def get_project!(id), do: Repo.get!(Project, id)

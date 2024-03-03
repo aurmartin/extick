@@ -52,12 +52,14 @@ projects = [
     key: "PRO",
     name: "Project",
     description: "Project description",
+    type: "scrum",
     org_id: Enum.at(orgs, 0).id
   },
   %{
     key: "EXT",
     name: "Extick",
     description: "Extick description",
+    type: "scrum",
     org_id: Enum.at(orgs, 0).id
   }
 ]
