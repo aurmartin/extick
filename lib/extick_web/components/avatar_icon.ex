@@ -5,7 +5,9 @@ defmodule ExtickWeb.Components.AvatarIcon do
   attr :rest, :global
 
   def avatar_icon(assigns) do
-    initials = assigns.user.name |> String.split(" ") |> Enum.map(&String.at(&1, 0)) |> Enum.join("")
+    initials =
+      assigns.user.name |> String.split(" ") |> Enum.map(&String.at(&1, 0)) |> Enum.join("")
+
     assigns = assign(assigns, initials: initials)
 
     render_default_initials(assigns)

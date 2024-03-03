@@ -22,10 +22,23 @@ defmodule Extick.Tickets do
   end
 
   def list_tickets_by_project_and_statuses(project_id, statuses) do
-    query = from t in Ticket,
-      where: t.project_id == ^project_id and t.status in ^statuses,
-      order_by: [asc: t.status, desc: t.inserted_at],
-      select: t
+    query =
+      from t in Ticket,
+        where: t.project_id == ^project_id and t.status in ^statuses,
+        order_by: [desc: t.inserted_at],
+        select: t
+
+    query
+    |> Repo.all()
+    |> Repo.preload([:reporter, :assignee])
+  end
+
+  def list_tickets_by_project(project_id) do
+    query =
+      from t in Ticket,
+        where: t.project_id == ^project_id,
+        order_by: [desc: t.inserted_at],
+        select: t
 
     query
     |> Repo.all()

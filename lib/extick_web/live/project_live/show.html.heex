@@ -16,7 +16,12 @@
 
 <.back navigate={~p"/projects"}>Back to projects</.back>
 
-<.modal :if={@live_action == :edit} id="project-modal" show on_cancel={JS.patch(~p"/projects/#{@project}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="project-modal"
+  show
+  on_cancel={JS.patch(~p"/projects/#{@project}")}
+>
   <.live_component
     module={ExtickWeb.ProjectLive.FormComponent}
     id={@project.id}

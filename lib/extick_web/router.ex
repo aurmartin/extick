@@ -30,7 +30,6 @@ defmodule ExtickWeb.Router do
 
   # Enable Swoosh mailbox preview in development
   if Application.compile_env(:extick, :dev_routes) do
-
     scope "/dev" do
       pipe_through :browser
 
@@ -68,8 +67,25 @@ defmodule ExtickWeb.Router do
 
       live "/projects/:id", ProjectLive.Show, :show
       live "/projects/:id/current_iteration", ProjectLive.ShowCurrentIteration, :show
-      live "/projects/:id/current_iteration/new_ticket", ProjectLive.ShowCurrentIteration, :new_ticket
-      live "/projects/:id/current_iteration/edit_ticket/:ticket_id", ProjectLive.ShowCurrentIteration, :edit_ticket
+
+      live "/projects/:id/current_iteration/new_ticket",
+           ProjectLive.ShowCurrentIteration,
+           :new_ticket
+
+      live "/projects/:id/current_iteration/edit_ticket/:ticket_id",
+           ProjectLive.ShowCurrentIteration,
+           :edit_ticket
+
+      live "/projects/:id/backlog", ProjectLive.ShowBacklog, :show
+
+      live "/projects/:id/backlog/new_ticket",
+           ProjectLive.ShowBacklog,
+           :new_ticket
+
+      live "/projects/:id/backlog/edit_ticket/:ticket_id",
+           ProjectLive.ShowBacklog,
+           :edit_ticket
+
       # live "/projects/:id/show/edit", ProjectLive.Show, :edit
 
       live "/orgs", OrgLive.Index, :index

@@ -35,7 +35,12 @@ defmodule Extick.TicketsTest do
 
     test "update_ticket/2 with valid data updates the ticket" do
       ticket = ticket_fixture()
-      update_attrs = %{status: "some updated status", description: "some updated description", title: "some updated title"}
+
+      update_attrs = %{
+        status: "some updated status",
+        description: "some updated description",
+        title: "some updated title"
+      }
 
       assert {:ok, %Ticket{} = ticket} = Tickets.update_ticket(ticket, update_attrs)
       assert ticket.status == "some updated status"

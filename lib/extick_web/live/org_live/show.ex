@@ -13,8 +13,10 @@ defmodule ExtickWeb.OrgLive.Show do
     case Orgs.get_org(id) do
       nil ->
         {:noreply, socket |> put_flash(:error, "Org not found") |> redirect(to: "/")}
+
       org ->
         org = Extick.Repo.preload(org, :projects)
+
         {:noreply,
          socket
          |> assign(:page_title, page_title(socket.assigns.live_action))

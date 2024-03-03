@@ -1,19 +1,17 @@
-defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
+defmodule ExtickWeb.ProjectLive.ShowBacklog do
   use ExtickWeb, {:live_view, layout: :project}
 
   alias Extick.Tickets
   alias Extick.Projects
-
-  import ExtickWeb.ProjectLive.Components
 
   @impl true
   def mount(params, _session, socket) do
     %{"id" => id} = params
 
     project = Projects.get_project!(id)
-    tickets = Tickets.list_tickets_by_project_and_statuses(id, ["open", "in_progress", "done"])
+    tickets = Tickets.list_tickets_by_project(project.id)
 
-    {:ok, assign(socket, project: project, tickets: tickets, project_page: "current_iteration")}
+    {:ok, assign(socket, project: project, tickets: tickets, project_page: "backlog")}
   end
 
   @impl true
@@ -56,24 +54,14 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
     ticket = Tickets.get_ticket!(id)
     {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
 
-    tickets =
-      Tickets.list_tickets_by_project_and_statuses(params.project_id, [
-        "open",
-        "in_progress",
-        "done"
-      ])
+    tickets = Tickets.list_tickets_by_project(socket.assigns.project.id)
 
     {:noreply, assign(socket, tickets: tickets)}
   end
 
   @impl true
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, _ticket}}, socket) do
-    tickets =
-      Tickets.list_tickets_by_project_and_statuses(socket.assigns.project.id, [
-        "open",
-        "in_progress",
-        "done"
-      ])
+    tickets = Tickets.list_tickets_by_project(socket.assigns.project.id)
 
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end

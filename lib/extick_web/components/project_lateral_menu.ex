@@ -11,7 +11,7 @@ defmodule Extick.Components.ProjectLateralMenu do
           <.link
             class={[
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
-              (if @project_page == "current_sprint", do: "bg-gray-200")
+              if(@project_page == "current_iteration", do: "bg-gray-200")
             ]}
             href={~p"/projects/#{@project}/current_iteration"}
           >
@@ -22,9 +22,9 @@ defmodule Extick.Components.ProjectLateralMenu do
           <.link
             class={[
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
-              (if @project_page == "backlog", do: "bg-gray-200")
+              if(@project_page == "backlog", do: "bg-gray-200")
             ]}
-            href={~p"/projects/#{@project}/current_iteration"}
+            href={~p"/projects/#{@project}/backlog"}
           >
             Backlog
           </.link>
@@ -33,7 +33,7 @@ defmodule Extick.Components.ProjectLateralMenu do
           <.link
             class={[
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
-              (if @project_page == "iterations", do: "bg-gray-200")
+              if(@project_page == "iterations", do: "bg-gray-200")
             ]}
             href={~p"/projects/#{@project}/current_iteration"}
           >
@@ -44,7 +44,7 @@ defmodule Extick.Components.ProjectLateralMenu do
           <.link
             class={[
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
-              (if @project_page == "iterations", do: "bg-gray-200")
+              if(@project_page == "iterations", do: "bg-gray-200")
             ]}
             href={~p"/projects/#{@project}/current_iteration"}
           >
@@ -55,7 +55,7 @@ defmodule Extick.Components.ProjectLateralMenu do
           <.link
             class={[
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
-              (if @project_page == "iterations", do: "bg-gray-200")
+              if(@project_page == "iterations", do: "bg-gray-200")
             ]}
             href={~p"/projects/#{@project}/current_iteration"}
           >

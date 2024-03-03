@@ -1,22 +1,30 @@
 <.header>
   <%= @project.name %>
 
-  <.link patch={~p"/projects/#{@project}/current_iteration/new_ticket"}>
+  <.link patch={~p"/projects/#{@project}/backlog/new_ticket"}>
     <.button class="ml-4 text-base">Create ticket</.button>
   </.link>
 </.header>
 
 <div class="flex gap-4 mt-4">
-  <.board_column status="open" tickets={@tickets} project={@project} />
-  <.board_column status="in_progress" tickets={@tickets} project={@project} />
-  <.board_column status="done" tickets={@tickets} project={@project} />
+  <.table
+    id="tickets"
+    rows={@tickets}
+    row_click={
+      fn ticket -> JS.patch(~p"/projects/#{@project}/backlog/edit_ticket/#{ticket.id}") end
+    }
+  >
+    <:col :let={ticket} label="Title"><%= ticket.title %></:col>
+    <:col :let={ticket} label="Type"><%= ticket.type %></:col>
+    <:col :let={ticket} label="Status"><%= ticket.status %></:col>
+  </.table>
 </div>
 
 <.modal
   :if={@live_action in [:new_ticket, :edit_ticket]}
   id="project-modal"
   show
-  on_cancel={JS.patch(~p"/projects/#{@project}/current_iteration")}
+  on_cancel={JS.patch(~p"/projects/#{@project}/backlog")}
 >
   <.live_component
     module={ExtickWeb.TicketLive.FormComponent}
@@ -29,7 +37,7 @@
       end
     }
     ticket={@ticket}
-    patch={~p"/projects/#{@project}/current_iteration"}
+    patch={~p"/projects/#{@project}/backlog"}
     current_user={@current_user}
     project={@project}
   />

@@ -7,7 +7,10 @@ defmodule Extick.Orgs.Org do
   schema "orgs" do
     field :name, :string
 
-    many_to_many :members, Extick.Accounts.User, join_through: Extick.Orgs.OrgUser, on_replace: :delete
+    many_to_many :members, Extick.Accounts.User,
+      join_through: Extick.Orgs.OrgUser,
+      on_replace: :delete
+
     has_many :projects, Extick.Projects.Project
 
     timestamps(type: :utc_datetime)

@@ -50,6 +50,7 @@ defmodule ExtickWeb do
 
   def live_view(opts \\ []) do
     layout = Keyword.get(opts, :layout, :app)
+
     quote do
       use Phoenix.LiveView,
         layout: {ExtickWeb.Layouts, unquote(layout)},

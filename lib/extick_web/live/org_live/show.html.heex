@@ -7,10 +7,7 @@
   </:actions> --%>
 </.header>
 
-<.table
-  id="projects"
-  rows={@org.projects}
->
+<.table id="projects" rows={@org.projects}>
   <:col :let={project} label="Project">
     <.link href={~p"/projects/#{project}/current_iteration"} class="hover:underline">
       <%= project.name %>

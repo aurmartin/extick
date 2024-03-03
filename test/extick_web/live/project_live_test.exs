@@ -5,7 +5,11 @@ defmodule ExtickWeb.ProjectLiveTest do
   import Extick.ProjectsFixtures
 
   @create_attrs %{name: "some name", description: "some description", key: "some key"}
-  @update_attrs %{name: "some updated name", description: "some updated description", key: "some updated key"}
+  @update_attrs %{
+    name: "some updated name",
+    description: "some updated description",
+    key: "some updated key"
+  }
   @invalid_attrs %{name: nil, description: nil, key: nil}
 
   defp create_project(_) do

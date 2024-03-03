@@ -31,7 +31,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="project-modal" show on_cancel={JS.patch(~p"/projects")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="project-modal"
+  show
+  on_cancel={JS.patch(~p"/projects")}
+>
   <.live_component
     module={ExtickWeb.ProjectLive.FormComponent}
     id={@project.id || :new}

@@ -35,7 +35,12 @@ defmodule Extick.ProjectsTest do
 
     test "update_project/2 with valid data updates the project" do
       project = project_fixture()
-      update_attrs = %{name: "some updated name", description: "some updated description", key: "some updated key"}
+
+      update_attrs = %{
+        name: "some updated name",
+        description: "some updated description",
+        key: "some updated key"
+      }
 
       assert {:ok, %Project{} = project} = Projects.update_project(project, update_attrs)
       assert project.name == "some updated name"

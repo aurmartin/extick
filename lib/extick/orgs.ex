@@ -44,7 +44,9 @@ defmodule Extick.Orgs do
   end
 
   def remove_member(%Org{} = org, %User{} = user) do
-    {1, nil} = Repo.delete_all(from ou in OrgUser, where: ou.org_id == ^org.id and ou.user_id == ^user.id)
+    {1, nil} =
+      Repo.delete_all(from ou in OrgUser, where: ou.org_id == ^org.id and ou.user_id == ^user.id)
+
     org
   end
 

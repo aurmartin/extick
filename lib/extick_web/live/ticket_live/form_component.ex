@@ -24,13 +24,24 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
           <.input field={@form[:type]} type="select" label="Type" options={type_select_options()} />
         <% else %>
-          <.input field={@form[:type]} type="select" label="Type" disabled={true} options={type_select_options()} />
+          <.input
+            field={@form[:type]}
+            type="select"
+            label="Type"
+            disabled={true}
+            options={type_select_options()}
+          />
         <% end %>
 
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:status]} type="select" label="Status" options={status_select_options()} />
-        <.input field={@form[:priority]} type="select" label="Priority" options={priority_select_options()}/>
+        <.input
+          field={@form[:priority]}
+          type="select"
+          label="Priority"
+          options={priority_select_options()}
+        />
 
         <:actions>
           <.button phx-disable-with="Saving...">Save Ticket</.button>

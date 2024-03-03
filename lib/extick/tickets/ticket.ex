@@ -21,7 +21,16 @@ defmodule Extick.Tickets.Ticket do
   @doc false
   def creation_changeset(ticket, attrs) do
     ticket
-    |> cast(attrs, [:type, :project_id, :title, :description, :status, :priority, :reporter_id, :assignee_id])
+    |> cast(attrs, [
+      :type,
+      :project_id,
+      :title,
+      :description,
+      :status,
+      :priority,
+      :reporter_id,
+      :assignee_id
+    ])
     |> validate_required([:type, :project_id, :title, :priority, :status])
     |> validate_inclusion(:status, ticket_statuses())
     |> validate_inclusion(:type, ticket_types())

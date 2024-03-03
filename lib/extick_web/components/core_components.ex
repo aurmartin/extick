@@ -335,7 +335,7 @@ defmodule ExtickWeb.CoreComponents do
         name={@name}
         class={[
           "mt-2 block w-full rounded border-2 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
+          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400"
         ]}
         multiple={@multiple}
         {@rest}
@@ -505,10 +505,7 @@ defmodule ExtickWeb.CoreComponents do
             </td>
             <td :if={@action != []} class="relative w-14 p-0">
               <div class="relative whitespace-nowrap py-4 text-right text-zinc-600">
-                <span
-                  :for={action <- @action}
-                  class="relative mx-4 hover:underline"
-                >
+                <span :for={action <- @action} class="relative mx-4 hover:underline">
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
               </div>

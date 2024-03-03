@@ -11,8 +11,7 @@ defmodule Extick.Application do
       ExtickWeb.Telemetry,
       Extick.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:extick, :ecto_repos),
-        skip: skip_migrations?()},
+       repos: Application.fetch_env!(:extick, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:extick, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Extick.PubSub},
       # Start the Finch HTTP client for sending emails
