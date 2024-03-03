@@ -17,10 +17,14 @@ defmodule Extick.Orgs do
   def get_org(id), do: Repo.get(Org, id)
   def get_org!(id), do: Repo.get!(Org, id)
 
-  def create_org(attrs \\ %{}) do
-    %Org{}
-    |> Org.changeset(attrs)
-    |> Repo.insert()
+  def create_org(%User{} = user, attrs \\ %{}) do
+    with {:ok, org} <- create_empty_org(attrs) do
+      add_member(org, user)
+    end
+  end
+
+  defp create_empty_org(attrs) do
+    %Org{} |> Org.changeset(attrs) |> Repo.insert()
   end
 
   def update_org(%Org{} = org, attrs) do
@@ -30,11 +34,11 @@ defmodule Extick.Orgs do
   end
 
   def add_member(%Org{} = org, %User{} = user) do
-    case Repo.get_by(OrgUser, org_id: org.id, user_id: user.id) do
-      nil ->
-        %OrgUser{org_id: org.id, user_id: user.id}
-        |> Repo.insert()
-      _ ->
+    with nil <- Repo.get_by(OrgUser, org_id: org.id, user_id: user.id),
+         {:ok, _} <- Repo.insert(%OrgUser{org_id: org.id, user_id: user.id}) do
+      {:ok, org}
+    else
+      %OrgUser{} ->
         {:error, "User is already a member"}
     end
   end
