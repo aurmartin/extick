@@ -1,6 +1,7 @@
 defmodule ExtickWeb.BoardLive.Show do
   use ExtickWeb, :live_view
 
+  alias Extick.Tickets
   alias Extick.Boards
   alias Extick.Repo
 
@@ -10,17 +11,30 @@ defmodule ExtickWeb.BoardLive.Show do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _, socket) do
+  def handle_params(params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :show, %{"id" => id}) do
     board = Boards.get_board!(id) |> Repo.preload(:project)
     tickets = Boards.get_tickets(board)
 
-    IO.inspect(tickets, label: "tickets")
+    socket
+    |> assign(:page_title, page_title(socket.assigns.live_action))
+    |> assign(:board, board)
+    |> assign(:tickets, tickets)
+  end
 
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:board, board)
-     |> assign(:tickets, tickets)}
+  defp apply_action(socket, :edit_ticket, %{"id" => id, "ticket_id" => ticket_id}) do
+    board = Boards.get_board!(id) |> Repo.preload(:project)
+    tickets = Boards.get_tickets(board)
+    ticket = Tickets.get_ticket!(ticket_id)
+
+    socket
+    |> assign(:page_title, "Edit Ticket")
+    |> assign(:board, board)
+    |> assign(:ticket, ticket)
+    |> assign(:tickets, tickets)
   end
 
   defp page_title(:show), do: "Show Board"

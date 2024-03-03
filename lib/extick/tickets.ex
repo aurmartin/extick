@@ -109,4 +109,15 @@ defmodule Extick.Tickets do
   def change_ticket(%Ticket{} = ticket, attrs \\ %{}) do
     Ticket.changeset(ticket, attrs)
   end
+
+  def all_statuses do
+    Ticket.ticket_statuses()
+  end
+
+  def format_status(status) do
+    status
+    |> String.split("_")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
+  end
 end

@@ -77,6 +77,7 @@ defmodule ExtickWeb.Router do
       live "/orgs/:id/show/edit", OrgLive.Show, :edit
 
       live "/boards/:id", BoardLive.Show, :show
+      live "/boards/:id/edit_ticket/:ticket_id", BoardLive.Show, :edit_ticket
     end
   end
 
