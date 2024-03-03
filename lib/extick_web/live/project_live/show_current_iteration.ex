@@ -57,7 +57,7 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
     {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
 
     tickets =
-      Tickets.list_tickets_by_project_and_statuses(params.project_id, [
+      Tickets.list_tickets_by_project_and_statuses(socket.assigns.project.id, [
         "open",
         "in_progress",
         "done"

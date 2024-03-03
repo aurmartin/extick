@@ -31,7 +31,8 @@ defmodule ExtickWeb.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:email]} type="email" label="Email" required />
+        <.input field={@form[:name]} type="text" label="Name" required />
+        <.input field={@form[:email]} type="email" label="Email" required autocomplete="email username" />
         <.input field={@form[:password]} type="password" label="Password" required />
 
         <:actions>
@@ -54,7 +55,7 @@ defmodule ExtickWeb.UserRegistrationLive do
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
-    case Accounts.register_user(user_params) do
+    case Accounts.register_user(user_params) |> IO.inspect() do
       {:ok, user} ->
         {:ok, _} =
           Accounts.deliver_user_confirmation_instructions(
