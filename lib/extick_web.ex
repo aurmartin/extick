@@ -48,10 +48,11 @@ defmodule ExtickWeb do
     end
   end
 
-  def live_view do
+  def live_view(opts \\ []) do
+    layout = Keyword.get(opts, :layout, :app)
     quote do
       use Phoenix.LiveView,
-        layout: {ExtickWeb.Layouts, :app}
+        layout: {ExtickWeb.Layouts, unquote(layout)}
 
       unquote(html_helpers())
     end
@@ -60,6 +61,14 @@ defmodule ExtickWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+
+      unquote(html_helpers())
+    end
+  end
+
+  def component do
+    quote do
+      use Phoenix.Component
 
       unquote(html_helpers())
     end
@@ -107,5 +116,9 @@ defmodule ExtickWeb do
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
+  end
+
+  defmacro __using__({which, args}) when is_atom(which) do
+    apply(__MODULE__, which, [args])
   end
 end

@@ -1,9 +1,11 @@
 defmodule ExtickWeb.BoardLive.Show do
-  use ExtickWeb, :live_view
+  use ExtickWeb, {:live_view, layout: :app_wide}
 
   alias Extick.Tickets
   alias Extick.Boards
   alias Extick.Repo
+
+  import ExtickWeb.BoardLive.Components
 
   @impl true
   def mount(_params, _session, socket) do
