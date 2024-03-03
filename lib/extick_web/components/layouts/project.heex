@@ -1,0 +1,10 @@
+<div class="flex h-full">
+  <Extick.Components.ProjectLateralMenu.render project={@project} project_page={@project_page} />
+
+  <main class="flex-grow p-4 sm:px-6 lg:px-8 [scrollbar-gutter:stable]">
+    <div class="mx-auto">
+      <.flash_group flash={@flash} />
+      <%= @inner_content %>
+    </div>
+  </main>
+</div>

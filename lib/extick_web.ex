@@ -52,7 +52,8 @@ defmodule ExtickWeb do
     layout = Keyword.get(opts, :layout, :app)
     quote do
       use Phoenix.LiveView,
-        layout: {ExtickWeb.Layouts, unquote(layout)}
+        layout: {ExtickWeb.Layouts, unquote(layout)},
+        container: {:div, class: "h-full"}
 
       unquote(html_helpers())
     end

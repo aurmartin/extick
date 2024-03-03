@@ -1,5 +1,5 @@
 defmodule ExtickWeb.BoardLive.Show do
-  use ExtickWeb, {:live_view, layout: :app_wide}
+  use ExtickWeb, {:live_view, layout: :project}
 
   alias Extick.Tickets
   alias Extick.Boards
@@ -8,8 +8,13 @@ defmodule ExtickWeb.BoardLive.Show do
   import ExtickWeb.BoardLive.Components
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(params, _session, socket) do
+    %{"id" => id} = params
+
+    board = Boards.get_board!(id) |> Repo.preload(:project)
+    tickets = Boards.get_tickets(board)
+
+    {:ok, assign(socket, project: board.project, board: board, tickets: tickets, project_page: "backlog")}
   end
 
   @impl true
@@ -17,43 +22,26 @@ defmodule ExtickWeb.BoardLive.Show do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :show, %{"id" => id}) do
-    board = Boards.get_board!(id) |> Repo.preload(:project)
-    tickets = Boards.get_tickets(board)
-
+  defp apply_action(socket, :show, _params) do
     socket
     |> assign(:page_title, page_title(socket.assigns.live_action))
-    |> assign(:board, board)
-    |> assign(:tickets, tickets)
   end
 
-  defp apply_action(socket, :edit_ticket, %{"id" => id, "ticket_id" => ticket_id}) do
-    board = Boards.get_board!(id) |> Repo.preload(:project)
-    tickets = Boards.get_tickets(board)
+  defp apply_action(socket, :edit_ticket, %{"ticket_id" => ticket_id}) do
     ticket = Tickets.get_ticket!(ticket_id)
-
-    socket
-    |> assign(:page_title, "Edit Ticket")
-    |> assign(:board, board)
-    |> assign(:ticket, ticket)
-    |> assign(:tickets, tickets)
+    assign(socket, page_title: "Edit Ticket", ticket: ticket)
   end
 
-  defp apply_action(socket, :new_ticket, %{"id" => id}) do
-    board = Boards.get_board!(id) |> Repo.preload(:project)
-    tickets = Boards.get_tickets(board)
+  defp apply_action(socket, :new_ticket, _params) do
+    %{board: board, current_user: current_user} = socket.assigns
 
     ticket = %Tickets.Ticket{
       project_id: board.project.id,
       priority: 3,
-      reporter_id: socket.assigns.current_user.id,
+      reporter_id: current_user.id
     }
 
-    socket
-    |> assign(:page_title, "New Ticket")
-    |> assign(:board, board)
-    |> assign(:ticket, ticket)
-    |> assign(:tickets, tickets)
+    assign(socket, page_title: "New Ticket", ticket: ticket)
   end
 
   @impl true
