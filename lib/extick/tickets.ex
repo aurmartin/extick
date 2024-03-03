@@ -26,7 +26,10 @@ defmodule Extick.Tickets do
       where: t.project_id == ^project_id and t.status in ^statuses,
       order_by: [asc: t.status, desc: t.inserted_at],
       select: t
-    Repo.all(query)
+
+    query
+    |> Repo.all()
+    |> Repo.preload([:reporter, :assignee])
   end
 
   @doc """
@@ -57,13 +60,9 @@ defmodule Extick.Tickets do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_ticket(user, project, attrs \\ %{}) do
-    %Ticket{
-      project_id: project.id,
-      reporter_id: user.id,
-      assignee_id: user.id
-    }
-    |> Ticket.changeset(attrs)
+  def create_ticket(attrs \\ %{}) do
+    %Ticket{}
+    |> Ticket.creation_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -81,7 +80,7 @@ defmodule Extick.Tickets do
   """
   def update_ticket(%Ticket{} = ticket, attrs) do
     ticket
-    |> Ticket.changeset(attrs)
+    |> Ticket.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -111,7 +110,7 @@ defmodule Extick.Tickets do
 
   """
   def change_ticket(%Ticket{} = ticket, attrs \\ %{}) do
-    Ticket.changeset(ticket, attrs)
+    Ticket.creation_changeset(ticket, attrs)
   end
 
   def all_statuses do
@@ -123,5 +122,30 @@ defmodule Extick.Tickets do
     |> String.split("_")
     |> Enum.map(&String.capitalize/1)
     |> Enum.join(" ")
+  end
+
+  def all_types do
+    Ticket.ticket_types()
+  end
+
+  def format_type(type) do
+    type
+    |> String.split("_")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
+  end
+
+  def all_priorities do
+    Ticket.ticket_priorities()
+  end
+
+  def format_priority(priority) do
+    case priority do
+      1 -> "Low"
+      2 -> "Normal"
+      3 -> "High"
+      4 -> "Urgent"
+      5 -> "Immediate"
+    end
   end
 end

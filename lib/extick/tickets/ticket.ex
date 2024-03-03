@@ -5,9 +5,11 @@ defmodule Extick.Tickets.Ticket do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "tickets" do
+    field :type, :string
     field :title, :string
-    field :description, :string
+    field :description, :string, default: ""
     field :status, :string
+    field :priority, :integer
 
     belongs_to :project, Extick.Projects.Project
     belongs_to :reporter, Extick.Accounts.User
@@ -17,14 +19,33 @@ defmodule Extick.Tickets.Ticket do
   end
 
   @doc false
-  def changeset(ticket, attrs) do
+  def creation_changeset(ticket, attrs) do
     ticket
-    |> cast(attrs, [:title, :description, :status, :project_id, :reporter_id, :assignee_id])
-    |> validate_required([:title, :description, :status, :project_id, :reporter_id, :assignee_id])
+    |> cast(attrs, [:type, :project_id, :title, :description, :status, :priority, :reporter_id, :assignee_id])
+    |> validate_required([:type, :project_id, :title, :priority, :status])
     |> validate_inclusion(:status, ticket_statuses())
+    |> validate_inclusion(:type, ticket_types())
+    |> validate_inclusion(:priority, ticket_priorities())
+  end
+
+  def update_changeset(ticket, attrs) do
+    ticket
+    |> cast(attrs, [:title, :description, :status, :priority, :reporter_id, :assignee_id])
+    |> validate_required([:title, :priority, :status])
+    |> validate_inclusion(:status, ticket_statuses())
+    |> validate_inclusion(:type, ticket_types())
+    |> validate_inclusion(:priority, ticket_priorities())
   end
 
   def ticket_statuses do
     ["backlog", "open", "in_progress", "done"]
+  end
+
+  def ticket_types do
+    ["story", "enabler", "bug"]
+  end
+
+  def ticket_priorities do
+    [1, 2, 3, 4, 5]
   end
 end

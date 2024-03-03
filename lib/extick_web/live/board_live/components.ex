@@ -8,7 +8,11 @@ defmodule ExtickWeb.BoardLive.Components do
   attr :board, :map
 
   def board_column(assigns) do
-    tickets = Enum.filter(assigns.tickets, &(&1.status == assigns.status))
+    tickets =
+      assigns.tickets
+      |> Enum.filter(&(&1.status == assigns.status))
+      |> Enum.sort_by(& &1.priority, :desc)
+
     assigns = assign(assigns, tickets: tickets)
 
     ~H"""
@@ -21,8 +25,23 @@ defmodule ExtickWeb.BoardLive.Components do
             class="bg-white border border-transparent rounded shadow shadow-gray-400 p-2 transition cursor-pointer hover:bg-gray-100 hover:border-gray-400"
             phx-click={JS.patch(~p"/boards/#{@board}/edit_ticket/#{ticket}")} data-id={ticket.id}
           >
+            <h2
+             class={[
+              "uppercase text-xs mb-1 font-bold",
+              case ticket.type do
+                "story" -> "text-green-600"
+                "enabler" -> "text-sky-500"
+                "bug" -> "text-red-600"
+              end
+            ]}
+            >
+              <%= ticket.type %>
+            </h2>
             <h3 class="text-sm"><%= ticket.title %></h3>
-            <p class="capitalize text-sm mt-2"><%= Extick.Tickets.format_status(ticket.status) %></p>
+
+            <%= if ticket.assignee do %>
+              <ExtickWeb.Components.AvatarIcon.avatar_icon user={ticket.assignee} class="mt-1" />
+            <% end %>
           </div>
         <% end %>
       </div>

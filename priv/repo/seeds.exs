@@ -76,17 +76,21 @@ assignee = Enum.at(users, 1)
 
 tickets = [
   %{
+    type: "story",
     title: "Ticket 1",
     description: "Ticket 1 description",
     status: "backlog",
+    priority: 2,
     project_id: project.id,
     reporter_id: reporter.id,
     assignee_id: assignee.id
   },
   %{
+    type: "story",
     title: "Ticket 2",
     description: "Ticket 2 description",
     status: "open",
+    priority: 3,
     project_id: project.id,
     reporter_id: reporter.id,
     assignee_id: assignee.id

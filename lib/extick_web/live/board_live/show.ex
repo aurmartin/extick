@@ -43,10 +43,16 @@ defmodule ExtickWeb.BoardLive.Show do
     board = Boards.get_board!(id) |> Repo.preload(:project)
     tickets = Boards.get_tickets(board)
 
+    ticket = %Tickets.Ticket{
+      project_id: board.project.id,
+      priority: 3,
+      reporter_id: socket.assigns.current_user.id,
+    }
+
     socket
     |> assign(:page_title, "New Ticket")
     |> assign(:board, board)
-    |> assign(:ticket, %Tickets.Ticket{})
+    |> assign(:ticket, ticket)
     |> assign(:tickets, tickets)
   end
 

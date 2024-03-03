@@ -19,9 +19,19 @@ defmodule ExtickWeb.TicketLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <%= if @action == :new do %>
+          <.input field={@form[:project_id]} type="hidden" />
+
+          <.input field={@form[:type]} type="select" label="Type" options={type_select_options()} />
+        <% else %>
+          <.input field={@form[:type]} type="select" label="Type" disabled={true} options={type_select_options()} />
+        <% end %>
+
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:status]} type="select" label="Status" options={status_select_options()} />
+        <.input field={@form[:priority]} type="select" label="Priority" options={priority_select_options()}/>
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Ticket</.button>
         </:actions>
@@ -32,6 +42,14 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
   defp status_select_options do
     Tickets.all_statuses() |> Enum.map(&{Tickets.format_status(&1), &1})
+  end
+
+  defp type_select_options do
+    Tickets.all_types() |> Enum.map(&{Tickets.format_type(&1), &1})
+  end
+
+  defp priority_select_options do
+    Tickets.all_priorities() |> Enum.map(&{Tickets.format_priority(&1), &1})
   end
 
   @impl true
@@ -74,9 +92,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
   end
 
   defp save_ticket(socket, :new, ticket_params) do
-    %{project: project, current_user: current_user} = socket.assigns
-
-    case Tickets.create_ticket(current_user, project, ticket_params) do
+    case Tickets.create_ticket(ticket_params) |> IO.inspect() do
       {:ok, ticket} ->
         notify_parent({:saved, ticket})
 
