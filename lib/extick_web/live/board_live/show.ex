@@ -37,6 +37,24 @@ defmodule ExtickWeb.BoardLive.Show do
     |> assign(:tickets, tickets)
   end
 
+  @impl true
+  def handle_event("move_ticket", params, socket) do
+    %{
+      "id" => id,
+      "newIndex" => _new_index,
+      "newStatus" => new_status,
+      "oldIndex" => _old_index,
+      "oldStatus" => _old_status
+    } = params
+
+    ticket = Tickets.get_ticket!(id)
+    {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
+
+    tickets = Boards.get_tickets(socket.assigns.board)
+
+    {:noreply, assign(socket, tickets: tickets)}
+  end
+
   defp page_title(:show), do: "Show Board"
   defp page_title(:edit), do: "Edit Board"
 end
