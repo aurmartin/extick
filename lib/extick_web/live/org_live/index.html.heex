@@ -1,8 +1,8 @@
 <.header>
-  Listing Orgs
+  Your organizations
   <:actions>
     <.link patch={~p"/orgs/new"}>
-      <.button>New Org</.button>
+      <.button>New organization</.button>
     </.link>
   </:actions>
 </.header>
@@ -12,21 +12,7 @@
   rows={@streams.orgs}
   row_click={fn {_id, org} -> JS.navigate(~p"/orgs/#{org}") end}
 >
-  <:col :let={{_id, org}} label="Name"><%= org.name %></:col>
-  <:action :let={{_id, org}}>
-    <div class="sr-only">
-      <.link navigate={~p"/orgs/#{org}"}>Show</.link>
-    </div>
-    <.link patch={~p"/orgs/#{org}/show/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, org}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: org.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
+  <:col :let={{_id, org}} label="Organization"><%= org.name %></:col>
 </.table>
 
 <.modal :if={@live_action in [:new]} id="org-modal" show on_cancel={JS.patch(~p"/orgs")}>

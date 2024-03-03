@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="[scrollbar-gutter:stable]">
+<html lang="en" class="h-full">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,16 +11,25 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="bg-white antialiased">
-    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
+  <body class="antialiased bg-white h-full">
+    <ul class="fixed top-0 left-0 z-10 w-full flex items-center gap-4 h-[60px] px-4 sm:px-6 lg:px-8 border-b-2 border-slate-300 bg-white">
+      <li class="text-slate-900 mr-auto">
+        <.link
+          href={~p"/"}
+          class="text-slate-900 font-semibold hover:text-slate-500"
+        >
+          ExTick
+        </.link>
+      </li>
+
       <%= if @current_user do %>
-        <li class="text-[0.8125rem] leading-6 text-zinc-900">
+        <li class="text-slate-900">
           <%= @current_user.email %>
         </li>
         <li>
           <.link
             href={~p"/users/settings"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-slate-900 font-semibold hover:text-slate-500"
           >
             Settings
           </.link>
@@ -29,7 +38,7 @@
           <.link
             href={~p"/users/log_out"}
             method="delete"
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-slate-900 font-semibold hover:text-slate-500"
           >
             Log out
           </.link>
@@ -38,7 +47,7 @@
         <li>
           <.link
             href={~p"/users/register"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-slate-900 font-semibold hover:text-slate-500"
           >
             Register
           </.link>
@@ -46,13 +55,16 @@
         <li>
           <.link
             href={~p"/users/log_in"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            class="text-slate-900 font-semibold hover:text-slate-500"
           >
             Log in
           </.link>
         </li>
       <% end %>
     </ul>
-    <%= @inner_content %>
+
+    <div class="h-full pt-[60px]">
+      <%= @inner_content %>
+    </div>
   </body>
 </html>

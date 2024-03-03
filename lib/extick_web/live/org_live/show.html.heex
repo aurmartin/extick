@@ -10,9 +10,12 @@
 <.table
   id="projects"
   rows={@org.projects}
-  row_click={fn project -> JS.navigate(~p"/orgs/#{@org}/projects/#{project}") end}
 >
-  <:col :let={project} label="Project"><%= project.name %></:col>
+  <:col :let={project} label="Project">
+    <.link href={~p"/orgs/#{@org}/projects/#{project}"} class="hover:underline">
+      <%= project.name %>
+    </.link>
+  </:col>
   <:action :let={project}>
     <div class="sr-only">
       <.link navigate={~p"/orgs/#{@org}/projects/#{project}"}>Show</.link>
