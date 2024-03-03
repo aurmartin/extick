@@ -100,6 +100,10 @@ defmodule ExtickWeb.Router do
       live "/projects/:id/backlog/edit_ticket/:ticket_id",
            ProjectLive.ShowBacklog,
            :edit_ticket
+
+      live "/projects/:id/backlog/new_iteration",
+            ProjectLive.ShowBacklog,
+            :new_iteration
     end
   end
 

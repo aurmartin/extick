@@ -34,13 +34,13 @@ defmodule Extick.Tickets do
   end
 
   def list_tickets_by_project(project_id) do
-    query =
-      from t in Ticket,
-        where: t.project_id == ^project_id,
-        order_by: [desc: t.inserted_at],
-        select: t
+    Ticket.list_by_project_query(project_id)
+    |> Repo.all()
+    |> Repo.preload([:reporter, :assignee])
+  end
 
-    query
+  def list_tickets_by_iteration(iteration_id) do
+    Ticket.list_by_iteration_query(iteration_id)
     |> Repo.all()
     |> Repo.preload([:reporter, :assignee])
   end

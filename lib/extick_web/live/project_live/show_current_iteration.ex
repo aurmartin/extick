@@ -11,9 +11,18 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
     %{"id" => id} = params
 
     project = Projects.get_project!(id)
-    tickets = Tickets.list_tickets_by_project_and_statuses(id, ["open", "in_progress", "done"])
+    iteration = Projects.find_current_iteration(project)
+    tickets = list_tickets(iteration)
 
-    {:ok, assign(socket, project: project, tickets: tickets, project_page: "current_iteration")}
+    IO.inspect(iteration, label: "iteration")
+
+    {:ok,
+     assign(socket,
+       project: project,
+       iteration: iteration,
+       tickets: tickets,
+       project_page: "current_iteration"
+     )}
   end
 
   @impl true
@@ -76,6 +85,14 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
       ])
 
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+  end
+
+  defp list_tickets(iteration) do
+    if iteration do
+      Tickets.list_tickets_by_iteration(iteration.id)
+    else
+      []
+    end
   end
 
   defp page_title(:show), do: "Backlog"

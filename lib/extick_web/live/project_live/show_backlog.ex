@@ -10,8 +10,9 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
 
     project = Projects.get_project!(id)
     tickets = Tickets.list_tickets_by_project(project.id)
+    iterations = Projects.list_iterations_by_project_and_statuses(project.id, ["planned", "active"])
 
-    {:ok, assign(socket, project: project, tickets: tickets, project_page: "backlog")}
+    {:ok, assign(socket, project: project, tickets: tickets, iterations: iterations, project_page: "backlog")}
   end
 
   @impl true
@@ -41,6 +42,19 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     assign(socket, page_title: page_title(socket.assigns.live_action), ticket: ticket)
   end
 
+  defp apply_action(socket, :new_iteration, _params) do
+    %{project: project} = socket.assigns
+
+    iteration = %Projects.Iteration{
+      start_date: Date.utc_today(),
+      end_date: Date.utc_today() |> Date.add(7),
+      project_id: project.id,
+      status: "planned"
+    }
+
+    assign(socket, page_title: page_title(socket.assigns.live_action), iteration: iteration)
+  end
+
   @impl true
   def handle_event("move_ticket", params, socket) do
     %{
@@ -66,7 +80,14 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end
 
+  def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:saved, _iteration}}, socket) do
+    iterations = Projects.list_iterations_by_project_and_statuses(socket.assigns.project.id, ["planned", "active"])
+
+    {:noreply, assign(socket, iterations: iterations, iteration: nil)}
+  end
+
   defp page_title(:show), do: "Backlog"
   defp page_title(:new_ticket), do: "New Ticket"
   defp page_title(:edit_ticket), do: "Edit Ticket"
+  defp page_title(:new_iteration), do: "New Iteration"
 end
