@@ -23,7 +23,7 @@ defmodule ExtickWeb.ProjectLive.Components do
 
       <div
         id={@status}
-        phx-hook="Sortable"
+        phx-hook="BoardTicketDragDrop"
         data-list_id={@status}
         class="flex-grow flex flex-col gap-2"
       >

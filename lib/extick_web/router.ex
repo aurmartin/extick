@@ -74,8 +74,10 @@ defmodule ExtickWeb.Router do
     pipe_through [:browser, :require_authenticated_user, :require_current_org]
 
     live_session :require_current_org,
-      on_mount: [{ExtickWeb.UserAuth, :ensure_authenticated}, {ExtickWeb.Org, :require_current_org}] do
-
+      on_mount: [
+        {ExtickWeb.UserAuth, :ensure_authenticated},
+        {ExtickWeb.Org, :require_current_org}
+      ] do
       live "/projects", ProjectLive.Index, :index
       live "/projects/new", ProjectLive.New
       live "/projects/:id/edit", ProjectLive.Index, :edit
@@ -102,8 +104,8 @@ defmodule ExtickWeb.Router do
            :edit_ticket
 
       live "/projects/:id/backlog/new_iteration",
-            ProjectLive.ShowBacklog,
-            :new_iteration
+           ProjectLive.ShowBacklog,
+           :new_iteration
     end
   end
 

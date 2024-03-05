@@ -10,9 +10,17 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
 
     project = Projects.get_project!(id)
     tickets = Tickets.list_tickets_by_project(project.id)
-    iterations = Projects.list_iterations_by_project_and_statuses(project.id, ["planned", "active"])
 
-    {:ok, assign(socket, project: project, tickets: tickets, iterations: iterations, project_page: "backlog")}
+    iterations =
+      Projects.list_iterations_by_project_and_statuses(project.id, ["planned", "active"])
+
+    {:ok,
+     assign(socket,
+       project: project,
+       tickets: tickets,
+       iterations: iterations,
+       project_page: "backlog"
+     )}
   end
 
   @impl true
@@ -56,17 +64,17 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
   end
 
   @impl true
-  def handle_event("move_ticket", params, socket) do
+  def handle_event("change_ticket_iteration", params, socket) do
     %{
       "id" => id,
       "newIndex" => _new_index,
-      "newStatus" => new_status,
+      "newIteration" => new_iteration,
       "oldIndex" => _old_index,
-      "oldStatus" => _old_status
+      "oldIteration" => _old_iteration
     } = params
 
     ticket = Tickets.get_ticket!(id)
-    {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
+    {:ok, _ticket} = Tickets.update_ticket(ticket, %{iteration_id: new_iteration})
 
     tickets = Tickets.list_tickets_by_project(socket.assigns.project.id)
 
@@ -81,7 +89,11 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
   end
 
   def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:saved, _iteration}}, socket) do
-    iterations = Projects.list_iterations_by_project_and_statuses(socket.assigns.project.id, ["planned", "active"])
+    iterations =
+      Projects.list_iterations_by_project_and_statuses(socket.assigns.project.id, [
+        "planned",
+        "active"
+      ])
 
     {:noreply, assign(socket, iterations: iterations, iteration: nil)}
   end

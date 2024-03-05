@@ -25,13 +25,12 @@ import Sortable from "../vendor/sortable"
 
 let Hooks = {}
 
-Hooks.Sortable = {
+Hooks.BoardTicketDragDrop = {
   mounted() {
     new Sortable(this.el, {
-      // animation: 150,
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
-      group: "shared",
+      group: "board-ticket-group",
       onEnd: e => {
         const params = {
           ...e.item.dataset,
@@ -41,6 +40,26 @@ Hooks.Sortable = {
           newStatus: e.to.id
         }
         this.pushEventTo(this.el, "move_ticket", params)
+      }
+    })
+  }
+}
+
+Hooks.BacklogTicketDragDrop = {
+  mounted() {
+    new Sortable(this.el, {
+      dragClass: "drag-item",
+      ghostClass: "drag-ghost",
+      group: "backlog-ticket-group",
+      onEnd: e => {
+        const params = {
+          ...e.item.dataset,
+          oldIndex: e.oldIndex,
+          newIndex: e.newIndex,
+          oldIteration: e.from.id,
+          newIteration: e.to.id
+        }
+        this.pushEventTo(this.el, "change_ticket_iteration", params)
       }
     })
   }
