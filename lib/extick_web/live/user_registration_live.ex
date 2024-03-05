@@ -32,7 +32,13 @@ defmodule ExtickWeb.UserRegistrationLive do
         </.error>
 
         <.input field={@form[:name]} type="text" label="Name" required />
-        <.input field={@form[:email]} type="email" label="Email" required autocomplete="email username" />
+        <.input
+          field={@form[:email]}
+          type="email"
+          label="Email"
+          required
+          autocomplete="email username"
+        />
         <.input field={@form[:password]} type="password" label="Password" required />
 
         <:actions>

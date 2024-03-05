@@ -1,53 +1,64 @@
 <.header>
   Backlog
-
   <.link patch={~p"/projects/#{@project}/backlog/new_ticket"}>
     <.button class="ml-4 text-base">Create ticket</.button>
   </.link>
 </.header>
 
 <%= for iteration <- (@iterations ++ [nil]) do %>
+  <% tickets =
+    Enum.filter(
+      @tickets,
+      &if(iteration, do: &1.iteration_id == iteration.id, else: &1.iteration_id == nil)
+    ) %>
 
-<% tickets = Enum.filter(@tickets, &(if iteration, do: &1.iteration_id == iteration.id, else: &1.iteration_id == nil)) %>
+  <%= if iteration do %>
+    <h2 class="mt-2 py-2 font-bold">
+      <%= iteration.name %>
+      <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span>
+    </h2>
+  <% else %>
+    <div class="flex mt-2 py-2 items-baseline">
+      <h2 class="font-bold">
+        Backlog <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span>
+      </h2>
 
-<%= if iteration do %>
-  <h2 class="mt-2 py-2 font-bold"><%= iteration.name %> <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span></h2>
-<% else %>
-  <div class="flex mt-2 py-2 items-baseline">
-    <h2 class="font-bold">Backlog <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span></h2>
-
-    <.link class="ml-auto" patch={~p"/projects/#{@project}/backlog/new_iteration"}>
-      <.button>Create iteration</.button>
-    </.link>
-  </div>
-<% end %>
-
-<div class="flex flex-col mt-1">
-  <%= for ticket <- tickets do %>
-    <div class="flex border border-gray-400 mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100">
-      <div><%= ticket.title %></div>
-
-      <div class="ml-auto">
-        <div class={[
-          "rounded px-1 py-0.5 text-xs uppercase font-bold",
-          case ticket.status do
-            "backlog" -> "bg-gray-300"
-            "open" -> "bg-green-300"
-            "in_progress" -> "bg-yellow-300"
-            "closed" -> "bg-red-300"
-          end,
-        ]}>
-          <%= Extick.Tickets.format_status(ticket.status) %>
-        </div>
-      </div>
+      <.link class="ml-auto" patch={~p"/projects/#{@project}/backlog/new_iteration"}>
+        <.button>Create iteration</.button>
+      </.link>
     </div>
   <% end %>
 
-  <div class="flex border border-gray-400 mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100">
-    <div class="text-gray-500">+ Create ticket</div>
-  </div>
-</div>
+  <div class="flex flex-col mt-1">
+    <div id={iteration && iteration.id} phx-hook="BacklogTicketDragDrop">
+      <%= for ticket <- tickets do %>
+        <div
+          data-id={ticket.id}
+          class="flex border border-gray-400 mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100"
+        >
+          <div><%= ticket.title %></div>
 
+          <div class="ml-auto">
+            <div class={[
+              "rounded px-1 py-0.5 text-xs uppercase font-bold",
+              case ticket.status do
+                "backlog" -> "bg-gray-300"
+                "open" -> "bg-green-300"
+                "in_progress" -> "bg-yellow-300"
+                "closed" -> "bg-red-300"
+              end
+            ]}>
+              <%= Extick.Tickets.format_status(ticket.status) %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="flex border border-gray-400 mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100">
+      <div class="text-gray-500">+ Create ticket</div>
+    </div>
+  </div>
 <% end %>
 
 <.modal

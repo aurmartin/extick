@@ -7,19 +7,15 @@
 </.header>
 
 <%= if @iteration do %>
-
-<div class="flex gap-4 mt-4">
-  <.board_column status="open" tickets={@tickets} project={@project} />
-  <.board_column status="in_progress" tickets={@tickets} project={@project} />
-  <.board_column status="done" tickets={@tickets} project={@project} />
-</div>
-
+  <div class="flex gap-4 mt-4">
+    <.board_column status="open" tickets={@tickets} project={@project} />
+    <.board_column status="in_progress" tickets={@tickets} project={@project} />
+    <.board_column status="done" tickets={@tickets} project={@project} />
+  </div>
 <% else %>
-
-<p class="mt-4 p-4 border border-gray-400 bg-gray-100 text-gray-800 rounded text-center">
-  You don't have an active iteration. Please create one in the backlog screen.
-</p>
-
+  <p class="mt-4 p-4 border border-gray-400 bg-gray-100 text-gray-800 rounded text-center">
+    You don't have an active iteration. Please create one in the backlog screen.
+  </p>
 <% end %>
 
 <.modal
