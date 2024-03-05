@@ -9,7 +9,7 @@ defmodule ExtickWeb.OrgLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage org records in your database.</:subtitle>
+        <:subtitle>You can create a new organization here.</:subtitle>
       </.header>
 
       <.simple_form
@@ -21,7 +21,7 @@ defmodule ExtickWeb.OrgLive.FormComponent do
       >
         <.input field={@form[:name]} type="text" label="Name" />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Org</.button>
+          <.button phx-disable-with="Saving...">Create Organization</.button>
         </:actions>
       </.simple_form>
     </div>

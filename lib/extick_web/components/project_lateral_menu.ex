@@ -35,7 +35,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               if(@project_page == "iterations", do: "bg-gray-200")
             ]}
-            href={~p"/projects/#{@project}/current_iteration"}
+            href={~p"/projects/#{@project}/iterations"}
           >
             Iterations
           </.link>
@@ -46,7 +46,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               if(@project_page == "iterations", do: "bg-gray-200")
             ]}
-            href={~p"/projects/#{@project}/current_iteration"}
+            href={~p"/projects/#{@project}/reports"}
           >
             Reports
           </.link>
@@ -57,7 +57,7 @@ defmodule Extick.Components.ProjectLateralMenu do
               "p-2 rounded block text-slate-900 font-semibold hover:bg-gray-200",
               if(@project_page == "iterations", do: "bg-gray-200")
             ]}
-            href={~p"/projects/#{@project}/current_iteration"}
+            href={~p"/projects/#{@project}/settings"}
           >
             Settings
           </.link>

@@ -4,7 +4,8 @@ defmodule Extick.Repo.Migrations.CreateProjects do
   def change do
     create table(:projects, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :key, :string, null: false, unique: true
+      add :key, :string, null: false
+      add :created_tickets_count, :integer
       add :name, :string, null: false
       add :description, :string, null: false
       add :type, :string, null: false
@@ -12,7 +13,5 @@ defmodule Extick.Repo.Migrations.CreateProjects do
 
       timestamps(type: :utc_datetime)
     end
-
-    create unique_index(:projects, [:key])
   end
 end

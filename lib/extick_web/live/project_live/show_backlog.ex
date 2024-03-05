@@ -92,6 +92,10 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     {:noreply, socket |> update_tickets() |> assign(ticket: nil)}
   end
 
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, _ticket}}, socket) do
+    {:noreply, socket |> update_tickets() |> assign(ticket: nil)}
+  end
+
   def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:saved, _iteration}}, socket) do
     iterations =
       Projects.list_iterations_by_project_and_statuses(socket.assigns.project.id, [

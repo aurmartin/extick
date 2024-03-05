@@ -3,7 +3,7 @@ defmodule Extick.Tickets.Ticket do
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:id, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "tickets" do
     field :type, :string

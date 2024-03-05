@@ -14,8 +14,6 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
     iteration = Projects.find_current_iteration(project)
     tickets = list_tickets(iteration)
 
-    IO.inspect(iteration, label: "iteration")
-
     {:ok,
      assign(socket,
        project: project,
@@ -65,25 +63,19 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
     ticket = Tickets.get_ticket!(id)
     {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
 
-    tickets =
-      Tickets.list_tickets_by_project_and_statuses(socket.assigns.project.id, [
-        "open",
-        "in_progress",
-        "done"
-      ])
+    tickets = list_tickets(socket.assigns.iteration)
 
     {:noreply, assign(socket, tickets: tickets)}
   end
 
   @impl true
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, _ticket}}, socket) do
-    tickets =
-      Tickets.list_tickets_by_project_and_statuses(socket.assigns.project.id, [
-        "open",
-        "in_progress",
-        "done"
-      ])
+    tickets = list_tickets(socket.assigns.iteration)
+    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+  end
 
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, _ticket}}, socket) do
+    tickets = list_tickets(socket.assigns.iteration)
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end
 

@@ -76,7 +76,35 @@ defmodule Extick.Tickets do
   def create_ticket(attrs \\ %{}) do
     %Ticket{}
     |> Ticket.creation_changeset(attrs)
-    |> Repo.insert()
+    |> set_ticket_id()
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{ticket: ticket}} -> {:ok, ticket}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  defp set_ticket_id(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{project_id: project_id}} ->
+        project = Extick.Projects.get_project!(project_id)
+
+        changeset =
+          changeset
+          |> Ecto.Changeset.put_change(:id, "#{project.key}-#{project.created_tickets_count + 1}")
+
+        Ecto.Multi.new()
+        |> Ecto.Multi.insert(:ticket, changeset)
+        |> Ecto.Multi.update(
+          :project,
+          Ecto.Changeset.change(project, %{
+            created_tickets_count: project.created_tickets_count + 1
+          })
+        )
+
+      _ ->
+        changeset
+    end
   end
 
   @doc """
@@ -95,6 +123,11 @@ defmodule Extick.Tickets do
     ticket
     |> Ticket.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  def delete_all_tickets(project_id) do
+    query = from(t in Ticket, where: t.project_id == ^project_id)
+    Repo.delete_all(query)
   end
 
   @doc """

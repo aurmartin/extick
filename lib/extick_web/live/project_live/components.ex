@@ -33,16 +33,21 @@ defmodule ExtickWeb.ProjectLive.Components do
             phx-click={JS.patch(~p"/projects/#{@project}/current_iteration/edit_ticket/#{ticket}")}
             data-id={ticket.id}
           >
-            <h2 class={[
-              "uppercase text-xs mb-1 font-bold",
-              case ticket.type do
-                "story" -> "text-green-600"
-                "enabler" -> "text-sky-500"
-                "bug" -> "text-red-600"
-              end
-            ]}>
-              <%= ticket.type %>
-            </h2>
+            <div class="flex mb-1 items-top">
+              <div class="text-zinc-500 text-sm"><%= ticket.id %></div>
+
+              <div class={[
+                "ml-auto uppercase text-xs font-bold",
+                case ticket.type do
+                  "story" -> "text-green-600"
+                  "enabler" -> "text-sky-500"
+                  "bug" -> "text-red-600"
+                end
+              ]}>
+                <%= ticket.type %>
+              </div>
+            </div>
+
             <h3 class="text-sm"><%= ticket.title %></h3>
 
             <%= if ticket.assignee do %>

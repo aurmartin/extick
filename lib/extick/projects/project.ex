@@ -8,6 +8,7 @@ defmodule Extick.Projects.Project do
     field :description, :string
     field :key, :string
     field :type, :string
+    field :created_tickets_count, :integer, default: 0
     belongs_to :org, Extick.Orgs.Org
 
     timestamps(type: :utc_datetime)
@@ -26,8 +27,20 @@ defmodule Extick.Projects.Project do
     changeset
     |> validate_format(:key, ~r/^[A-Z]+$/, message: "must be uppercase")
     |> validate_length(:key, min: 3, max: 20)
-    |> unsafe_validate_unique(:key, Extick.Repo)
-    |> unique_constraint(:key)
+    |> case do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        org_id = get_field(changeset, :org_id)
+
+        validate_change(changeset, :key, fn _, key ->
+          case Extick.Projects.get_project_by_key(org_id, key) do
+            nil -> []
+            _ -> [{:key, "has already been taken"}]
+          end
+        end)
+
+      changeset ->
+        changeset
+    end
   end
 
   defp validate_type(changeset) do

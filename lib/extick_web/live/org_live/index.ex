@@ -16,13 +16,13 @@ defmodule ExtickWeb.OrgLive.Index do
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New organization")
+    |> assign(:page_title, "New Organization")
     |> assign(:org, %Org{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Your organizations")
+    |> assign(:page_title, "Your Organizations")
     |> assign(:org, nil)
   end
 

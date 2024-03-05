@@ -18,6 +18,10 @@ defmodule Extick.Projects do
 
   def get_project!(id), do: Repo.get!(Project, id)
 
+  def get_project_by_key(org_id, key) do
+    Repo.get_by(Project, org_id: org_id, key: key)
+  end
+
   def create_project(attrs \\ %{}) do
     %Project{}
     |> Project.changeset(attrs)
@@ -59,7 +63,9 @@ defmodule Extick.Projects do
     )
     |> Ecto.Multi.update_all(
       :tickets,
-      Ecto.Query.from(t in Tickets.Ticket, where: t.iteration_id == ^iteration.id),
+      Ecto.Query.from(t in Tickets.Ticket,
+        where: t.iteration_id == ^iteration.id and t.status != "done"
+      ),
       set: [iteration_id: nil]
     )
     |> Repo.transaction()

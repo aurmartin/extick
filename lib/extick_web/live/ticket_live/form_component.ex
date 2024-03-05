@@ -44,6 +44,9 @@ defmodule ExtickWeb.TicketLive.FormComponent do
         />
 
         <:actions>
+          <.button phx-disable-with="Deleting..." phx-target={@myself} phx-click={JS.push("delete")}>
+            Delete Ticket
+          </.button>
           <.button phx-disable-with="Saving...">Save Ticket</.button>
         </:actions>
       </.simple_form>
@@ -85,6 +88,21 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
   def handle_event("save", %{"ticket" => ticket_params}, socket) do
     save_ticket(socket, socket.assigns.action, ticket_params)
+  end
+
+  def handle_event("delete", _, socket) do
+    case Tickets.delete_ticket(socket.assigns.ticket) do
+      {:ok, ticket} ->
+        notify_parent({:deleted, ticket})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Ticket deleted successfully")
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, _} ->
+        {:noreply, socket |> put_flash(:error, "Ticket could not be deleted")}
+    end
   end
 
   defp save_ticket(socket, :edit, ticket_params) do

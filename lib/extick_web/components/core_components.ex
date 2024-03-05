@@ -65,7 +65,7 @@ defmodule ExtickWeb.CoreComponents do
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-zinc-700/30 ring-zinc-700/30 relative hidden rounded bg-white p-8 shadow-lg ring-2 transition"
+              class="shadow-zinc-700/30 ring-zinc-700/30 relative hidden rounded bg-white p-6 shadow-md ring-1 transition"
             >
               <div class="absolute top-6 right-5">
                 <button
@@ -200,7 +200,7 @@ defmodule ExtickWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class="mt-4 space-y-4 bg-white">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -220,6 +220,7 @@ defmodule ExtickWeb.CoreComponents do
   """
   attr :type, :string, default: nil
   attr :class, :string, default: nil
+  attr :color, :string, default: "secondary", values: ~w(primary secondary)
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
@@ -229,9 +230,11 @@ defmodule ExtickWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded border-2 border-teal-500 bg-teal-50 py-1 px-2",
-        "font-semibold text-teal-950",
-        "hover:bg-teal-100 focus:border-teal-600 outline-none",
+        "text-sm border rounded p-1",
+        case @color do
+          "primary" -> "border-green-500 hover:bg-green-300 hover:border-green-600"
+          "secondary" -> "border-zinc-400 hover:bg-zinc-100 hover:border-zinc-400"
+        end,
         @class
       ]}
       {@rest}
@@ -334,7 +337,7 @@ defmodule ExtickWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded border-2 focus:ring-0 sm:text-sm sm:leading-6",
+          "py-1 px-2 mt-1 block w-full rounded border focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400"
         ]}
         multiple={@multiple}
@@ -379,7 +382,7 @@ defmodule ExtickWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded border-2 focus:ring-0 sm:text-sm sm:leading-6",
+          "py-1 px-2 mt-1 block w-full rounded border focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -435,7 +438,7 @@ defmodule ExtickWeb.CoreComponents do
         <h1 class="text-2xl text-zinc-800">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="mt-4">
+        <p :if={@subtitle != []} class="mt-2">
           <%= render_slot(@subtitle) %>
         </p>
       </div>

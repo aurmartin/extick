@@ -1,9 +1,11 @@
 <.header>
-  <%= @project.name %>
+  Iteration <%= @iteration && @iteration.name %>
 
-  <.link patch={~p"/projects/#{@project}/current_iteration/new_ticket"}>
-    <.button class="ml-4 text-base">Create ticket</.button>
-  </.link>
+  <:actions>
+    <.link patch={~p"/projects/#{@project}/current_iteration/new_ticket"}>
+      <.button>Create ticket</.button>
+    </.link>
+  </:actions>
 </.header>
 
 <%= if @iteration do %>
@@ -14,7 +16,9 @@
   </div>
 <% else %>
   <p class="mt-4 p-4 border border-gray-400 bg-gray-100 text-gray-800 rounded text-center">
-    You don't have an active iteration. Please create one in the backlog screen.
+    You don't have an active iteration. Please create one in the
+    <.link class="underline" navigate={~p"/projects/#{@project}/backlog"}>backlog</.link>
+    screen.
   </p>
 <% end %>
 
