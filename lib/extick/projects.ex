@@ -8,6 +8,7 @@ defmodule Extick.Projects do
   alias Extick.Repo
 
   alias Extick.Projects.Project
+  alias Extick.Tickets
 
   # Projects
 
@@ -48,6 +49,20 @@ defmodule Extick.Projects do
   def update_iteration(%Iteration{} = iteration, attrs) do
     Iteration.update_changeset(iteration, attrs)
     |> Repo.update()
+  end
+
+  def complete_iteration(%Iteration{} = iteration) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(
+      :iteration,
+      Iteration.update_changeset(iteration, %{status: "completed"})
+    )
+    |> Ecto.Multi.update_all(
+      :tickets,
+      Ecto.Query.from(t in Tickets.Ticket, where: t.iteration_id == ^iteration.id),
+      set: [iteration_id: nil]
+    )
+    |> Repo.transaction()
   end
 
   def find_current_iteration(project) do

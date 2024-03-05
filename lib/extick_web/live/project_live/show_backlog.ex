@@ -9,18 +9,14 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     %{"id" => id} = params
 
     project = Projects.get_project!(id)
-    tickets = Tickets.list_tickets_by_project(project.id)
 
-    iterations =
-      Projects.list_iterations_by_project_and_statuses(project.id, ["planned", "active"])
+    socket =
+      socket
+      |> assign(project: project)
+      |> update_tickets()
+      |> update_iterations()
 
-    {:ok,
-     assign(socket,
-       project: project,
-       tickets: tickets,
-       iterations: iterations,
-       project_page: "backlog"
-     )}
+    {:ok, assign(socket, project_page: "backlog")}
   end
 
   @impl true
@@ -76,16 +72,24 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     ticket = Tickets.get_ticket!(id)
     {:ok, _ticket} = Tickets.update_ticket(ticket, %{iteration_id: new_iteration})
 
-    tickets = Tickets.list_tickets_by_project(socket.assigns.project.id)
+    {:noreply, update_tickets(socket)}
+  end
 
-    {:noreply, assign(socket, tickets: tickets)}
+  def handle_event("start_iteration", %{"id" => iteration_id}, socket) do
+    iteration = Projects.get_iteration!(iteration_id)
+    {:ok, _iteration} = Projects.update_iteration(iteration, %{status: "active"})
+    {:noreply, update_iterations(socket)}
+  end
+
+  def handle_event("complete_iteration", %{"id" => iteration_id}, socket) do
+    iteration = Projects.get_iteration!(iteration_id)
+    {:ok, _iteration} = Projects.complete_iteration(iteration)
+    {:noreply, socket |> update_tickets() |> update_iterations()}
   end
 
   @impl true
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, _ticket}}, socket) do
-    tickets = Tickets.list_tickets_by_project(socket.assigns.project.id)
-
-    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+    {:noreply, socket |> update_tickets() |> assign(ticket: nil)}
   end
 
   def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:saved, _iteration}}, socket) do
@@ -96,6 +100,21 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
       ])
 
     {:noreply, assign(socket, iterations: iterations, iteration: nil)}
+  end
+
+  defp update_iterations(socket) do
+    iterations =
+      Projects.list_iterations_by_project_and_statuses(socket.assigns.project.id, [
+        "planned",
+        "active"
+      ])
+
+    assign(socket, iterations: iterations)
+  end
+
+  defp update_tickets(socket) do
+    tickets = Tickets.list_tickets_by_project(socket.assigns.project.id)
+    assign(socket, tickets: tickets)
   end
 
   defp page_title(:show), do: "Backlog"

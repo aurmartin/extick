@@ -5,6 +5,8 @@
   </.link>
 </.header>
 
+<% active_iteration_id = Enum.find_value(@iterations, &if(&1.status == "active", do: &1.id)) %>
+
 <%= for iteration <- (@iterations ++ [nil]) do %>
   <% tickets =
     Enum.filter(
@@ -13,10 +15,30 @@
     ) %>
 
   <%= if iteration do %>
-    <h2 class="mt-2 py-2 font-bold">
-      <%= iteration.name %>
-      <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span>
-    </h2>
+    <div class="flex mt-2 py-2 items-baseline">
+      <h2 class="font-bold">
+        <%= iteration.name %>
+        <span class="text-gray-700 font-normal">(<%= length(tickets) %> tickets)</span>
+      </h2>
+
+      <%= if is_nil(active_iteration_id) do %>
+        <.button
+          class="ml-auto"
+          phx-click={JS.push("start_iteration", value: %{id: iteration.id})}
+        >
+          Start iteration
+        </.button>
+      <% end %>
+
+      <%= if active_iteration_id == iteration.id do %>
+        <.button
+          class="ml-auto"
+          phx-click={JS.push("complete_iteration", value: %{id: iteration.id})}
+        >
+          Terminate iteration
+        </.button>
+      <% end %>
+    </div>
   <% else %>
     <div class="flex mt-2 py-2 items-baseline">
       <h2 class="font-bold">
