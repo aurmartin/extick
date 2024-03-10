@@ -3,6 +3,8 @@ defmodule Extick.Tickets.Ticket do
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
+  alias Extick.Tickets
+
   @primary_key {:id, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "tickets" do
@@ -25,7 +27,6 @@ defmodule Extick.Tickets.Ticket do
     ticket
     |> cast(attrs, [
       :type,
-      :project_id,
       :title,
       :description,
       :status,
@@ -33,10 +34,10 @@ defmodule Extick.Tickets.Ticket do
       :reporter_id,
       :assignee_id
     ])
-    |> validate_required([:type, :project_id, :title, :priority, :status])
-    |> validate_inclusion(:status, ticket_statuses())
-    |> validate_inclusion(:type, ticket_types())
-    |> validate_inclusion(:priority, ticket_priorities())
+    |> validate_required([:type, :title, :priority, :status])
+    |> validate_inclusion(:status, Tickets.statuses(ticket.project))
+    |> validate_inclusion(:type, Tickets.types())
+    |> validate_inclusion(:priority, Tickets.priorities())
   end
 
   def update_changeset(ticket, attrs) do
@@ -51,21 +52,9 @@ defmodule Extick.Tickets.Ticket do
       :iteration_id
     ])
     |> validate_required([:title, :priority, :status])
-    |> validate_inclusion(:status, ticket_statuses())
-    |> validate_inclusion(:type, ticket_types())
-    |> validate_inclusion(:priority, ticket_priorities())
-  end
-
-  def ticket_statuses do
-    ["backlog", "open", "in_progress", "done"]
-  end
-
-  def ticket_types do
-    ["story", "enabler", "bug"]
-  end
-
-  def ticket_priorities do
-    [1, 2, 3, 4, 5]
+    |> validate_inclusion(:status, Tickets.statuses(ticket.project))
+    |> validate_inclusion(:type, Tickets.types())
+    |> validate_inclusion(:priority, Tickets.priorities())
   end
 
   def list_by_iteration_query(iteration_id) do

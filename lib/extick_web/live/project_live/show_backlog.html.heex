@@ -66,7 +66,7 @@
           phx-hook="BacklogTicketDragDrop"
           class="flex flex-col"
         >
-          <%= for ticket <- tickets do %>
+          <%= for ticket <- Enum.take(tickets, 1000) do %>
             <div
               data-id={ticket.id}
               class="flex mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100 border-y border-zinc-400"

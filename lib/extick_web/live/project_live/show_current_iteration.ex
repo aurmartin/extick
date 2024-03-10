@@ -12,7 +12,12 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
 
     project = Projects.get_project!(id)
     iteration = Projects.find_current_iteration(project)
-    tickets = list_tickets(iteration)
+    tickets =
+      if iteration do
+        Tickets.list_tickets_by_iteration(iteration.id)
+      else
+        []
+      end
 
     {:ok,
      assign(socket,
@@ -34,7 +39,11 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   end
 
   defp apply_action(socket, :edit_ticket, %{"ticket_id" => ticket_id}) do
-    ticket = Tickets.get_ticket!(ticket_id)
+    ticket =
+      socket.assigns.tickets
+      |> Enum.find(&(&1.id == ticket_id))
+      |> Map.put(:project, socket.assigns.project)
+
     assign(socket, page_title: page_title(socket.assigns.live_action), ticket: ticket)
   end
 
@@ -42,7 +51,7 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
     %{project: project, current_user: current_user} = socket.assigns
 
     ticket = %Tickets.Ticket{
-      project_id: project.id,
+      project: project,
       priority: 3,
       reporter_id: current_user.id
     }
@@ -60,31 +69,26 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
       "oldStatus" => _old_status
     } = params
 
-    ticket = Tickets.get_ticket!(id)
-    {:ok, _ticket} = Tickets.update_ticket(ticket, %{status: new_status})
+    ticket =
+      socket.assigns.tickets
+      |> Enum.find(&(&1.id == id))
+      |> Map.put(:project, socket.assigns.project)
 
-    tickets = list_tickets(socket.assigns.iteration)
+    {:ok, ticket} = Tickets.update_ticket(ticket, %{status: new_status})
+
+    tickets = Enum.map(socket.assigns.tickets, fn t -> if t.id == id, do: ticket, else: t end)
 
     {:noreply, assign(socket, tickets: tickets)}
   end
 
   @impl true
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, _ticket}}, socket) do
-    tickets = list_tickets(socket.assigns.iteration)
-    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+    {:noreply, assign(socket, ticket: nil)}
   end
 
-  def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, _ticket}}, socket) do
-    tickets = list_tickets(socket.assigns.iteration)
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, ticket}}, socket) do
+    tickets = socket.assigns.tickets |> Enum.reject(&(&1.id == ticket.id))
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
-  end
-
-  defp list_tickets(iteration) do
-    if iteration do
-      Tickets.list_tickets_by_iteration(iteration.id)
-    else
-      []
-    end
   end
 
   defp page_title(:show), do: "Backlog"

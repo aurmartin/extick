@@ -20,8 +20,6 @@ defmodule ExtickWeb.TicketLive.FormComponent do
         phx-submit="save"
       >
         <%= if @action == :new do %>
-          <.input field={@form[:project_id]} type="hidden" />
-
           <.input field={@form[:type]} type="select" label="Type" options={type_select_options()} />
         <% else %>
           <.input
@@ -35,7 +33,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
-        <.input field={@form[:status]} type="select" label="Status" options={status_select_options()} />
+        <.input field={@form[:status]} type="select" label="Status" options={status_select_options(assigns)} />
         <.input
           field={@form[:priority]}
           type="select"
@@ -54,16 +52,16 @@ defmodule ExtickWeb.TicketLive.FormComponent do
     """
   end
 
-  defp status_select_options do
-    Tickets.all_statuses() |> Enum.map(&{Tickets.format_status(&1), &1})
+  defp status_select_options(assigns) do
+    Tickets.statuses(assigns.project) |> Enum.map(&{Tickets.format_status(&1), &1})
   end
 
   defp type_select_options do
-    Tickets.all_types() |> Enum.map(&{Tickets.format_type(&1), &1})
+    Tickets.types() |> Enum.map(&{Tickets.format_type(&1), &1})
   end
 
   defp priority_select_options do
-    Tickets.all_priorities() |> Enum.map(&{Tickets.format_priority(&1), &1})
+    Tickets.priorities() |> Enum.map(&{Tickets.format_priority(&1), &1})
   end
 
   @impl true
@@ -121,7 +119,9 @@ defmodule ExtickWeb.TicketLive.FormComponent do
   end
 
   defp save_ticket(socket, :new, ticket_params) do
-    case Tickets.create_ticket(ticket_params) |> IO.inspect() do
+    %{project: project} = socket.assigns
+
+    case Tickets.create_ticket(project, ticket_params) do
       {:ok, ticket} ->
         notify_parent({:saved, ticket})
 

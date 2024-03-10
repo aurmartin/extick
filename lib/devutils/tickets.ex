@@ -1,4 +1,5 @@
-defmodule Devutils.Tickets do
+defmodule Devutils.Data.Tickets do
+  alias Extick.Projects
   alias Extick.Tickets
 
   @title_desc [
@@ -96,25 +97,62 @@ defmodule Devutils.Tickets do
     }
   ]
 
-  @statuses ["open", "in_progress", "done"]
-
-  @priorities [1, 2, 3, 4, 5]
-
-  def generate_ticket(project_id) do
+  def generate_ticket(project) do
     {title, desc} = Enum.random(@title_desc)
 
     %{
-      project_id: project_id,
-      type: Enum.random(Tickets.all_types()),
+      project: project,
+      type: Enum.random(Tickets.types()),
       title: title,
       description: desc,
-      status: Enum.random(@statuses),
-      priority: Enum.random(@priorities)
+      status: Enum.random(Tickets.statuses(project)),
+      priority: Enum.random(Tickets.priorities())
     }
   end
 
   def generate_tickets(project_id, n) do
-    Enum.map(1..n, fn _ -> generate_ticket(project_id) end)
-    |> Enum.map(&Tickets.create_ticket/1)
+    project = Projects.get_project!(project_id)
+    Enum.map(1..n, fn _ -> generate_ticket(project) end)
+    |> Enum.map(&Tickets.create_ticket(project, &1))
+  end
+end
+
+defmodule Devutils.Data.Projects do
+  @name [
+    "Order Capture & Sourcing",
+    "Order Management",
+    "Order Fulfillment",
+    "Extended Supply",
+    "Customer Service",
+    "LV Finor",
+    "LV Finor - Frontend",
+    "LV Finor - Backend",
+    "LV Finor - Mobile",
+  ]
+
+  defp random_key do
+    letters =
+      ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+    Enum.random(letters) <> Enum.random(letters) <> Enum.random(letters)
+  end
+
+  def generate_project(org) do
+    %{
+      name: Enum.random(@name),
+      key: random_key(),
+      description: "This is a project description",
+      type: "scrum",
+      org_id: org.id
+    }
+  end
+
+  def generate_projects(org_id, i, j) do
+    org = Extick.Orgs.get_org!(org_id) |> IO.inspect()
+    Enum.map(1..i, fn _ -> generate_project(org) end)
+    |> Enum.map(fn params ->
+      {:ok, x} = Extick.Projects.create_project(params)
+      x
+    end)
+    |> Enum.each(&Devutils.Data.Tickets.generate_tickets(&1.id, j))
   end
 end

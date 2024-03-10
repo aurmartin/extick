@@ -7,16 +7,8 @@ defmodule Extick.Tickets do
   alias Extick.Repo
 
   alias Extick.Tickets.Ticket
+  alias Extick.Projects.Project
 
-  @doc """
-  Returns the list of tickets.
-
-  ## Examples
-
-      iex> list_tickets()
-      [%Ticket{}, ...]
-
-  """
   def list_tickets do
     Repo.all(Ticket)
   end
@@ -45,38 +37,20 @@ defmodule Extick.Tickets do
     |> Repo.preload([:reporter, :assignee])
   end
 
-  @doc """
-  Gets a single ticket.
-
-  Raises `Ecto.NoResultsError` if the Ticket does not exist.
-
-  ## Examples
-
-      iex> get_ticket!(123)
-      %Ticket{}
-
-      iex> get_ticket!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_ticket!(id), do: Repo.get!(Ticket, id)
 
-  @doc """
-  Creates a ticket.
+  def create_ticket(%Project{} = project, attrs) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:id, fn repo, _changes ->
+      query = from(p in Project, where: p.id == ^project.id)
+      count = query |> Ecto.Query.select([p], p.created_tickets_count) |> repo.one!()
+      repo.update_all(query, inc: [created_tickets_count: 1])
 
-  ## Examples
-
-      iex> create_ticket(%{field: value})
-      {:ok, %Ticket{}}
-
-      iex> create_ticket(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_ticket(attrs \\ %{}) do
-    %Ticket{}
-    |> Ticket.creation_changeset(attrs)
-    |> set_ticket_id()
+      {:ok, "#{project.key}-#{count + 1}"}
+    end)
+    |> Ecto.Multi.insert(:ticket, fn %{id: id} ->
+      Ticket.creation_changeset(%Ticket{id: id, project: project}, attrs)
+    end)
     |> Repo.transaction()
     |> case do
       {:ok, %{ticket: ticket}} -> {:ok, ticket}
@@ -84,43 +58,9 @@ defmodule Extick.Tickets do
     end
   end
 
-  defp set_ticket_id(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{project_id: project_id}} ->
-        project = Extick.Projects.get_project!(project_id)
-
-        changeset =
-          changeset
-          |> Ecto.Changeset.put_change(:id, "#{project.key}-#{project.created_tickets_count + 1}")
-
-        Ecto.Multi.new()
-        |> Ecto.Multi.insert(:ticket, changeset)
-        |> Ecto.Multi.update(
-          :project,
-          Ecto.Changeset.change(project, %{
-            created_tickets_count: project.created_tickets_count + 1
-          })
-        )
-
-      _ ->
-        changeset
-    end
-  end
-
-  @doc """
-  Updates a ticket.
-
-  ## Examples
-
-      iex> update_ticket(ticket, %{field: new_value})
-      {:ok, %Ticket{}}
-
-      iex> update_ticket(ticket, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_ticket(%Ticket{} = ticket, attrs) do
     ticket
+    |> Repo.preload(:project)
     |> Ticket.update_changeset(attrs)
     |> Repo.update()
   end
@@ -130,37 +70,19 @@ defmodule Extick.Tickets do
     Repo.delete_all(query)
   end
 
-  @doc """
-  Deletes a ticket.
-
-  ## Examples
-
-      iex> delete_ticket(ticket)
-      {:ok, %Ticket{}}
-
-      iex> delete_ticket(ticket)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_ticket(%Ticket{} = ticket) do
     Repo.delete(ticket)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking ticket changes.
-
-  ## Examples
-
-      iex> change_ticket(ticket)
-      %Ecto.Changeset{data: %Ticket{}}
-
-  """
   def change_ticket(%Ticket{} = ticket, attrs \\ %{}) do
     Ticket.creation_changeset(ticket, attrs)
   end
 
-  def all_statuses do
-    Ticket.ticket_statuses()
+  def statuses(%Project{} = project) do
+    case project.type do
+      "scrum" -> ["open", "in_progress", "done"]
+      "kanban" -> ["backlog", "open", "in_progress", "done"]
+    end
   end
 
   def format_status(status) do
@@ -170,8 +92,8 @@ defmodule Extick.Tickets do
     |> Enum.join(" ")
   end
 
-  def all_types do
-    Ticket.ticket_types()
+  def types do
+    ["story", "enabler", "bug"]
   end
 
   def format_type(type) do
@@ -181,8 +103,8 @@ defmodule Extick.Tickets do
     |> Enum.join(" ")
   end
 
-  def all_priorities do
-    Ticket.ticket_priorities()
+  def priorities do
+    [1, 2, 3, 4, 5]
   end
 
   def format_priority(priority) do
