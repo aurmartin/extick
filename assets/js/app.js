@@ -65,6 +65,17 @@ Hooks.BacklogTicketDragDrop = {
   }
 }
 
+Hooks.LocalTime = {
+  mounted() {
+    this.updated()
+  },
+  updated() {
+    const dt = new Date(this.el.textContent.trim())
+    this.el.textContent = dt.toLocaleString()
+    this.el.classList.remove("invisible")
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
 

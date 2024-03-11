@@ -19,6 +19,8 @@ defmodule Extick.Tickets.Ticket do
     belongs_to :reporter, Extick.Accounts.User
     belongs_to :assignee, Extick.Accounts.User
 
+    has_many :comments, Extick.Tickets.Comment
+
     timestamps(type: :utc_datetime)
   end
 

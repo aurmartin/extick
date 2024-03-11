@@ -4,8 +4,10 @@ defmodule Extick.Tickets do
   """
 
   import Ecto.Query, warn: false
-  alias Extick.Repo
 
+  alias Extick.Repo
+  alias Extick.Events
+  alias Extick.Accounts.User
   alias Extick.Tickets.Ticket
   alias Extick.Projects.Project
 
@@ -115,5 +117,56 @@ defmodule Extick.Tickets do
       4 -> "Urgent"
       5 -> "Immediate"
     end
+  end
+
+  alias Extick.Tickets.Comment
+
+  def comments_subscribe(%Ticket{} = ticket) do
+    Phoenix.PubSub.subscribe(Extick.PubSub, comments_topic(ticket))
+  end
+
+  defp comments_topic(%Ticket{} = ticket) do
+    "ticket:#{ticket.id}:comments"
+  end
+
+  def list_comments(ticket_id) do
+    query = from(c in Comment, where: c.ticket_id == ^ticket_id, order_by: [desc: c.inserted_at])
+    Repo.all(query) |> Repo.preload(:author)
+  end
+
+  def get_comment!(id), do: Repo.get!(Comment, id)
+
+  def create_comment(%Ticket{} = ticket, %User{} = author, attrs \\ %{}) do
+    %Comment{ticket: ticket, author: author}
+    |> Comment.changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, comment} ->
+        :ok =
+          Phoenix.PubSub.broadcast(
+            Extick.PubSub,
+            comments_topic(ticket),
+            {__MODULE__, %Events.CommentAdded{comment: comment}}
+          )
+
+        {:ok, comment}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  def update_comment(%Comment{} = comment, attrs) do
+    comment
+    |> Comment.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_comment(%Comment{} = comment) do
+    Repo.delete(comment)
+  end
+
+  def change_comment(%Comment{} = comment, attrs \\ %{}) do
+    Comment.changeset(comment, attrs)
   end
 end

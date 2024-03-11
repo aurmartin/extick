@@ -75,7 +75,7 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
 
     ticket = socket.assigns.tickets |> Enum.find(&(&1.id == id))
     {:ok, ticket} = Tickets.update_ticket(ticket, %{iteration_id: new_iteration})
-    tickets = socket.assigns.tickets |> Enum.map(&(if &1.id == id, do: ticket, else: &1))
+    tickets = socket.assigns.tickets |> Enum.map(&if &1.id == id, do: ticket, else: &1)
 
     {:noreply, assign(socket, tickets: tickets)}
   end
@@ -83,20 +83,26 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
   def handle_event("start_iteration", %{"id" => iteration_id}, socket) do
     iteration = socket.assigns.iterations |> Enum.find(&(&1.id == iteration_id))
     {:ok, iteration} = Projects.update_iteration(iteration, %{status: "active"})
-    iterations = socket.assigns.iterations |> Enum.map(&(if &1.id == iteration_id, do: iteration, else: &1))
+
+    iterations =
+      socket.assigns.iterations |> Enum.map(&if &1.id == iteration_id, do: iteration, else: &1)
+
     {:noreply, assign(socket, iterations: iterations)}
   end
 
   def handle_event("complete_iteration", %{"id" => iteration_id}, socket) do
     iteration = socket.assigns.iterations |> Enum.find(&(&1.id == iteration_id))
     {:ok, iteration} = Projects.complete_iteration(iteration)
-    iterations = socket.assigns.iterations |> Enum.map(&(if &1.id == iteration_id, do: iteration, else: &1))
+
+    iterations =
+      socket.assigns.iterations |> Enum.map(&if &1.id == iteration_id, do: iteration, else: &1)
+
     {:noreply, socket |> assign(iterations: iterations) |> update_tickets()}
   end
 
   @impl true
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, ticket}}, socket) do
-    tickets = socket.assigns.tickets |> Enum.map(&(if &1.id == ticket.id, do: ticket, else: &1))
+    tickets = socket.assigns.tickets |> Enum.map(&if &1.id == ticket.id, do: ticket, else: &1)
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end
 
@@ -106,7 +112,9 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
   end
 
   def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:saved, iteration}}, socket) do
-    iterations = socket.assigns.iterations |> Enum.map(&(if &1.id == iteration.id, do: iteration, else: &1))
+    iterations =
+      socket.assigns.iterations |> Enum.map(&if &1.id == iteration.id, do: iteration, else: &1)
+
     {:noreply, assign(socket, iterations: iterations, iteration: nil)}
   end
 

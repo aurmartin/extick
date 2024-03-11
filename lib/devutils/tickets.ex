@@ -112,6 +112,7 @@ defmodule Devutils.Data.Tickets do
 
   def generate_tickets(project_id, n) do
     project = Projects.get_project!(project_id)
+
     Enum.map(1..n, fn _ -> generate_ticket(project) end)
     |> Enum.map(&Tickets.create_ticket(project, &1))
   end
@@ -127,12 +128,40 @@ defmodule Devutils.Data.Projects do
     "LV Finor",
     "LV Finor - Frontend",
     "LV Finor - Backend",
-    "LV Finor - Mobile",
+    "LV Finor - Mobile"
   ]
 
   defp random_key do
     letters =
-      ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+      [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z"
+      ]
+
     Enum.random(letters) <> Enum.random(letters) <> Enum.random(letters)
   end
 
@@ -148,6 +177,7 @@ defmodule Devutils.Data.Projects do
 
   def generate_projects(org_id, i, j) do
     org = Extick.Orgs.get_org!(org_id) |> IO.inspect()
+
     Enum.map(1..i, fn _ -> generate_project(org) end)
     |> Enum.map(fn params ->
       {:ok, x} = Extick.Projects.create_project(params)

@@ -12,6 +12,7 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
 
     project = Projects.get_project!(id)
     iteration = Projects.find_current_iteration(project)
+
     tickets =
       if iteration do
         Tickets.list_tickets_by_iteration(iteration.id)
@@ -89,6 +90,11 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, ticket}}, socket) do
     tickets = socket.assigns.tickets |> Enum.reject(&(&1.id == ticket.id))
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+  end
+
+  def handle_info({Extick.Tickets, %_event{comment: comment} = event}, socket) do
+    send_update(ExtickWeb.TicketLive.FormComponent, id: comment.ticket_id, event: event)
+    {:noreply, socket}
   end
 
   defp page_title(:show), do: "Backlog"

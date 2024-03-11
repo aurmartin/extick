@@ -359,8 +359,8 @@ defmodule ExtickWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[6rem] phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
+          "py-1 px-2 mt-1 block w-full rounded text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "min-h-[2rem] phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -595,6 +595,15 @@ defmodule ExtickWeb.CoreComponents do
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
+    """
+  end
+
+  attr :date, :string
+  attr :id, :string
+
+  def local_time(assigns) do
+    ~H"""
+    <time phx-hook="LocalTime" id={@id} class="invisible"><%= @date %></time>
     """
   end
 

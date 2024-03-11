@@ -1,4 +1,5 @@
 defmodule ExtickWeb.TicketLive.FormComponent do
+  alias Extick.Events
   use ExtickWeb, :live_component
 
   alias Extick.Tickets
@@ -33,7 +34,12 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
-        <.input field={@form[:status]} type="select" label="Status" options={status_select_options(assigns)} />
+        <.input
+          field={@form[:status]}
+          type="select"
+          label="Status"
+          options={status_select_options(assigns)}
+        />
         <.input
           field={@form[:priority]}
           type="select"
@@ -48,6 +54,29 @@ defmodule ExtickWeb.TicketLive.FormComponent do
           <.button phx-disable-with="Saving...">Save Ticket</.button>
         </:actions>
       </.simple_form>
+
+      <%= if @action == :edit do %>
+        <h2 class="mt-4 text-lg font-bold">Comments</h2>
+        <.simple_form
+          for={@comment_form}
+          id="comment-form"
+          phx-target={@myself}
+          phx-change="validate_comment"
+          phx-submit="save_comment"
+        >
+          <.input field={@comment_form[:content]} type="textarea" placeholder="New comment" rows="2" />
+          <.button phx-disable-with="Saving...">Save</.button>
+        </.simple_form>
+
+        <%= for comment <- @comments do %>
+          <div class="mt-4">
+            <p class="text-sm mb-1">
+              <%= comment.author.name %>, <.local_time id={comment.id} date={comment.inserted_at} />
+            </p>
+            <p class="rounded p-2 bg-gray-100"><%= comment.content %></p>
+          </div>
+        <% end %>
+      <% end %>
     </div>
     """
   end
@@ -66,12 +95,27 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
   @impl true
   def update(%{ticket: ticket} = assigns, socket) do
+    comments = Tickets.list_comments(ticket.id)
     changeset = Tickets.change_ticket(ticket)
+    comment_changeset = Tickets.change_comment(%Tickets.Comment{})
+
+    :ok = Tickets.comments_subscribe(ticket)
 
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:comments, comments)
+     |> assign(:comment_form, to_form(comment_changeset))
      |> assign_form(changeset)}
+  end
+
+  def update(%{event: %Events.CommentAdded{comment: comment}}, socket) do
+    comments =
+      [comment | socket.assigns.comments]
+      |> Enum.uniq_by(&(&1.id))
+      |> Enum.sort(&(&1.inserted_at > &2.inserted_at))
+
+    {:ok, assign(socket, :comments, comments)}
   end
 
   @impl true
@@ -100,6 +144,36 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
       {:error, _} ->
         {:noreply, socket |> put_flash(:error, "Ticket could not be deleted")}
+    end
+  end
+
+  def handle_event("validate_comment", %{"comment" => comment_params}, socket) do
+    comment_form =
+      %Tickets.Comment{}
+      |> Tickets.change_comment(comment_params)
+      |> to_form()
+
+    {:noreply, assign(socket, :comment_form, comment_form)}
+  end
+
+  def handle_event("save_comment", %{"comment" => comment_params}, socket) do
+    ticket = socket.assigns.ticket
+    author = socket.assigns.current_user
+
+    case Tickets.create_comment(ticket, author, comment_params) do
+      {:ok, _comment} ->
+        comments = Tickets.list_comments(ticket.id)
+        comment_changeset = Tickets.change_comment(%Tickets.Comment{})
+
+        socket =
+          socket
+          |> assign(:comments, comments)
+          |> assign(:comment_form, to_form(comment_changeset))
+
+        {:noreply, socket}
+
+      {:error, _} ->
+        {:noreply, socket |> put_flash(:error, "Comment could not be saved")}
     end
   end
 
