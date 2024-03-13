@@ -67,27 +67,12 @@
           class="flex flex-col"
         >
           <%= for ticket <- Enum.take(tickets, 1000) do %>
-            <div
-              data-id={ticket.id}
-              class="flex mt-[-1px] p-2 text-sm cursor-pointer hover:bg-gray-100 border-y border-zinc-400"
-              phx-click={JS.patch(~p"/projects/#{@project}/backlog/edit_ticket/#{ticket.id}")}
-            >
-              <div class="mr-2 text-zinc-500"><%= ticket.id %></div>
-              <div><%= ticket.title %></div>
-
-              <div class="ml-auto">
-                <div class={[
-                  "rounded py-0.5 px-1 text-sm",
-                  case ticket.status do
-                    "in_progress" -> "bg-blue-200"
-                    "done" -> "bg-green-300"
-                    _ -> "bg-gray-200"
-                  end
-                ]}>
-                  <%= Extick.Tickets.format_status(ticket.status) %>
-                </div>
-              </div>
-            </div>
+            <.live_component
+              module={ExtickWeb.ProjectLive.ShowBacklog.TicketListItem}
+              id={ticket.id}
+              ticket={ticket}
+              project={@project}
+            />
           <% end %>
         </div>
 

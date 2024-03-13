@@ -81,9 +81,9 @@ tickets = [
     type: "story",
     title: "Ticket 1",
     description: "Ticket 1 description",
-    status: "backlog",
+    status: "open",
     priority: 2,
-    project_id: project.id,
+    project: project,
     reporter_id: reporter.id,
     assignee_id: assignee.id
   },
@@ -93,7 +93,7 @@ tickets = [
     description: "Ticket 2 description",
     status: "open",
     priority: 3,
-    project_id: project.id,
+    project: project,
     reporter_id: reporter.id,
     assignee_id: assignee.id
   }
@@ -101,6 +101,6 @@ tickets = [
 
 tickets =
   Enum.map(tickets, fn ticket ->
-    {:ok, ticket} = Tickets.create_ticket(ticket)
+    {:ok, ticket} = Tickets.create_ticket(ticket.project, ticket)
     ticket
   end)

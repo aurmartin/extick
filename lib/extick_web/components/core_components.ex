@@ -38,6 +38,8 @@ defmodule ExtickWeb.CoreComponents do
   attr :id, :string, required: true
   attr :show, :boolean, default: false
   attr :on_cancel, JS, default: %JS{}
+  attr :large, :boolean, default: false
+
   slot :inner_block, required: true
 
   def modal(assigns) do
@@ -59,7 +61,11 @@ defmodule ExtickWeb.CoreComponents do
         tabindex="0"
       >
         <div class="flex h-full items-center justify-center">
-          <div class="w-full h-full max-w-3xl p-4 sm:p-6 lg:py-8">
+          <div class={[
+            "w-full h-full p-4 sm:p-6 lg:py-8",
+            @large && "max-w-6xl",
+            !@large && "max-w-2xl"
+          ]}>
             <.focus_wrap
               id={"#{@id}-container"}
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
@@ -277,7 +283,7 @@ defmodule ExtickWeb.CoreComponents do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
+               range radio search select tel text textarea time url week ticket-title)
 
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
@@ -367,6 +373,25 @@ defmodule ExtickWeb.CoreComponents do
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
       <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
+  def input(%{type: "ticket-title"} = assigns) do
+    ~H"""
+    <div class="w-full flex">
+      <input
+        type="text"
+        name={@name}
+        id={@id}
+        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        class={[
+          "ml-[-0.5rem] mr-8 py-1 px-2 mt-1 block flex-grow rounded border focus:ring-0 text-xl font-bold",
+          @errors == [] && "border-transparent focus:border-zinc-400",
+          @errors != [] && "border-rose-400 focus:border-rose-400"
+        ]}
+        {@rest}
+      />
     </div>
     """
   end

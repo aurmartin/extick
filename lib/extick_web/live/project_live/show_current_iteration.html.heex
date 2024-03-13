@@ -27,6 +27,7 @@
   id="project-modal"
   show
   on_cancel={JS.patch(~p"/projects/#{@project}/current_iteration")}
+  large
 >
   <.live_component
     module={ExtickWeb.TicketLive.FormComponent}

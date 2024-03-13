@@ -13,5 +13,7 @@ defmodule Extick.Repo.Migrations.CreateProjects do
 
       timestamps(type: :utc_datetime)
     end
+
+    create unique_index(:projects, [:org_id, :key])
   end
 end

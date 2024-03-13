@@ -5,8 +5,8 @@ defmodule Extick.Tickets.Comment do
   alias Extick.Tickets.Ticket
   alias Extick.Accounts.User
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  @primary_key {:id, Ecto.UUID, autogenerate: true}
+  @foreign_key_type Ecto.UUID
   schema "comments" do
     field :content, :string
     belongs_to :ticket, Ticket

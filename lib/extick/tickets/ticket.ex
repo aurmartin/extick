@@ -5,8 +5,8 @@ defmodule Extick.Tickets.Ticket do
 
   alias Extick.Tickets
 
-  @primary_key {:id, :binary_id, autogenerate: false}
-  @foreign_key_type :binary_id
+  @primary_key {:id, :string, autogenerate: false}
+  @foreign_key_type Ecto.UUID
   schema "tickets" do
     field :type, :string
     field :title, :string

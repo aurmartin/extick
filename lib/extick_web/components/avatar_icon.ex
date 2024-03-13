@@ -6,7 +6,7 @@ defmodule ExtickWeb.Components.AvatarIcon do
 
   def avatar_icon(assigns) do
     initials =
-      assigns.user.name |> String.split(" ") |> Enum.map(&String.at(&1, 0)) |> Enum.join("")
+      assigns.user.name |> String.split(" ") |> Enum.map_join("", &String.at(&1, 0))
 
     assigns = assign(assigns, initials: initials)
 

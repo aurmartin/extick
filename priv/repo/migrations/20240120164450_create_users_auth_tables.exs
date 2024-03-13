@@ -1,10 +1,12 @@
-defmodule Extick.Repo.Migrations.CreateUsersAuthTables do
+defmodule PostgresTest.Repo.Migrations.CreateUsersAuthTables do
   use Ecto.Migration
 
   def change do
+    execute "CREATE EXTENSION IF NOT EXISTS citext", ""
+
     create table(:users, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :email, :string, null: false, collate: :nocase
+      add :email, :citext, null: false
       add :name, :string, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
@@ -16,7 +18,7 @@ defmodule Extick.Repo.Migrations.CreateUsersAuthTables do
     create table(:users_tokens, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :user_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
-      add :token, :binary, null: false, size: 32
+      add :token, :binary, null: false
       add :context, :string, null: false
       add :sent_to, :string
       timestamps(updated_at: false)

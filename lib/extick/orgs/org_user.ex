@@ -3,7 +3,7 @@ defmodule Extick.Orgs.OrgUser do
   import Ecto.Changeset
 
   @primary_key false
-  @foreign_key_type :binary_id
+  @foreign_key_type Ecto.UUID
   schema "orgs_users" do
     belongs_to :org, Extick.Orgs.Org
     belongs_to :user, Extick.Accounts.User

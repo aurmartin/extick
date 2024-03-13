@@ -8,52 +8,47 @@ defmodule ExtickWeb.TicketLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= @title %>
-        <:subtitle>Use this form to manage ticket records in your database.</:subtitle>
-      </.header>
+      <.form for={@form} id="ticket-form" phx-target={@myself} phx-change="validate" phx-submit="save">
+        <div class="flex mb-4">
+          <div class="w-2/3 space-y-4 pr-8">
+            <.input field={@form[:title]} type="ticket-title" placeholder="Title" />
 
-      <.simple_form
-        for={@form}
-        id="ticket-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-      >
-        <%= if @action == :new do %>
-          <.input field={@form[:type]} type="select" label="Type" options={type_select_options()} />
-        <% else %>
-          <.input
-            field={@form[:type]}
-            type="select"
-            label="Type"
-            disabled={true}
-            options={type_select_options()}
-          />
-        <% end %>
+            <div class="grid grid-cols-2 gap-4">
+              <.input
+                field={@form[:type]}
+                type="select"
+                label="Type"
+                disabled={@action == :edit}
+                options={type_select_options()}
+              />
 
-        <.input field={@form[:title]} type="text" label="Title" />
-        <.input field={@form[:description]} type="text" label="Description" />
-        <.input
-          field={@form[:status]}
-          type="select"
-          label="Status"
-          options={status_select_options(assigns)}
-        />
-        <.input
-          field={@form[:priority]}
-          type="select"
-          label="Priority"
-          options={priority_select_options()}
-        />
+              <.input
+                field={@form[:status]}
+                type="select"
+                label="Status"
+                options={status_select_options(assigns)}
+              />
+            </div>
 
-        <:actions>
-          <.button phx-disable-with="Deleting..." phx-target={@myself} phx-click={JS.push("delete")}>
-            Delete Ticket
-          </.button>
-          <.button phx-disable-with="Saving...">Save Ticket</.button>
-        </:actions>
-      </.simple_form>
+            <.input field={@form[:description]} type="textarea" label="Description" />
+          </div>
+
+          <div class="w-1/3 space-y-4 pt-4 px-8">
+            <p class="">Additional Fields</p>
+            <.input
+              field={@form[:priority]}
+              label="Priority"
+              type="select"
+              options={priority_select_options()}
+            />
+          </div>
+        </div>
+
+        <.button phx-disable-with="Deleting..." phx-target={@myself} phx-click={JS.push("delete")}>
+          Delete Ticket
+        </.button>
+        <.button phx-disable-with="Saving...">Save Ticket</.button>
+      </.form>
 
       <%= if @action == :edit do %>
         <h2 class="mt-4 text-lg font-bold">Comments</h2>
@@ -95,7 +90,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
   @impl true
   def update(%{ticket: ticket} = assigns, socket) do
-    comments = Tickets.list_comments(ticket.id)
+    comments = Tickets.list_comments(ticket)
     changeset = Tickets.change_ticket(ticket)
     comment_changeset = Tickets.change_comment(%Tickets.Comment{})
 
@@ -112,7 +107,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
   def update(%{event: %Events.CommentAdded{comment: comment}}, socket) do
     comments =
       [comment | socket.assigns.comments]
-      |> Enum.uniq_by(&(&1.id))
+      |> Enum.uniq_by(& &1.id)
       |> Enum.sort(&(&1.inserted_at > &2.inserted_at))
 
     {:ok, assign(socket, :comments, comments)}
@@ -162,7 +157,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
     case Tickets.create_comment(ticket, author, comment_params) do
       {:ok, _comment} ->
-        comments = Tickets.list_comments(ticket.id)
+        comments = Tickets.list_comments(ticket)
         comment_changeset = Tickets.change_comment(%Tickets.Comment{})
 
         socket =

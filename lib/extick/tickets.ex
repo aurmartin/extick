@@ -90,8 +90,7 @@ defmodule Extick.Tickets do
   def format_status(status) do
     status
     |> String.split("_")
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join(" ")
+    |> Enum.map_join(" ", &String.capitalize/1)
   end
 
   def types do
@@ -101,8 +100,7 @@ defmodule Extick.Tickets do
   def format_type(type) do
     type
     |> String.split("_")
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join(" ")
+    |> Enum.map_join(" ", &String.capitalize/1)
   end
 
   def priorities do
@@ -129,8 +127,10 @@ defmodule Extick.Tickets do
     "ticket:#{ticket.id}:comments"
   end
 
-  def list_comments(ticket_id) do
-    query = from(c in Comment, where: c.ticket_id == ^ticket_id, order_by: [desc: c.inserted_at])
+  def list_comments(%Ticket{id: nil}), do: []
+
+  def list_comments(%Ticket{} = ticket) do
+    query = from(c in Comment, where: c.ticket_id == ^ticket.id, order_by: [desc: c.inserted_at])
     Repo.all(query) |> Repo.preload(:author)
   end
 

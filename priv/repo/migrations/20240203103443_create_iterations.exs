@@ -10,7 +10,7 @@ defmodule Extick.Repo.Migrations.CreateIterations do
       add :start_date, :date
       add :end_date, :date
 
-      add :project_id, references(:projects, on_delete: :delete_all)
+      add :project_id, references(:projects, type: :binary_id, on_delete: :delete_all)
 
       timestamps(type: :utc_datetime)
     end

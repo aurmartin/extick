@@ -176,7 +176,7 @@ defmodule Devutils.Data.Projects do
   end
 
   def generate_projects(org_id, i, j) do
-    org = Extick.Orgs.get_org!(org_id) |> IO.inspect()
+    org = Extick.Orgs.get_org!(org_id)
 
     Enum.map(1..i, fn _ -> generate_project(org) end)
     |> Enum.map(fn params ->
