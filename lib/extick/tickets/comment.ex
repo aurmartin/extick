@@ -9,7 +9,7 @@ defmodule Extick.Tickets.Comment do
   @foreign_key_type Ecto.UUID
   schema "comments" do
     field :content, :string
-    belongs_to :ticket, Ticket
+    belongs_to :ticket, Ticket, type: :string
     belongs_to :author, User
 
     timestamps(type: :utc_datetime)

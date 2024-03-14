@@ -386,7 +386,7 @@ defmodule ExtickWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "ml-[-0.5rem] mr-8 py-1 px-2 mt-1 block flex-grow rounded border focus:ring-0 text-xl font-bold",
+          "ml-[-0.5rem] mt-[-0.5rem] py-1 px-2 mt-1 block flex-grow rounded border focus:ring-0 text-xl font-bold",
           @errors == [] && "border-transparent focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
