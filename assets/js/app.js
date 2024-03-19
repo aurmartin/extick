@@ -76,6 +76,58 @@ Hooks.LocalTime = {
   }
 }
 
+Hooks.Select = {
+  mounted() {
+    this.listeners = []
+    this.open = false
+    this.loading = false
+    this.value = ""
+    this.updated()
+  },
+  updated() {
+    const selectMenu = this.el.querySelector(`#${this.el.id}_select`)
+    const valueInput = this.el.querySelector(`#${this.el.id}_value_input`)
+    // const loader = this.el.querySelector(`#${this.el.id}_loader`)
+    const input = this.el.querySelector(`#${this.el.id}_input`)
+
+    input.addEventListener("focus", () => {
+      this.open = true
+      selectMenu.classList.remove("hidden")
+    })
+
+    input.addEventListener("blur", () => {
+      this.open = false
+      selectMenu.classList.add("hidden")
+    })
+
+    input.addEventListener("input", () => {
+      this.pushEventTo(this.el, "change", { value: input.value })
+      valueInput.dispatchEvent(new Event("change", { bubbles: true }))
+    })
+
+    if (this.open) {
+      selectMenu.classList.remove("hidden")
+    }
+
+    valueInput.value = this.value
+
+    const menuItems = selectMenu.querySelectorAll("[data-id]").values().toArray()
+
+    this.listeners =
+      menuItems.map(option => {
+        if (this.listeners.includes(option)) return
+        option.addEventListener("mousedown", () => {
+          valueInput.value = option.dataset.id
+          this.value = option.dataset.id
+          valueInput.dispatchEvent(new Event("change", { bubbles: true }))
+
+          // loader.classList.remove("hidden")
+        })
+        return option
+      })
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
 

@@ -4,6 +4,7 @@ defmodule Extick.Accounts do
   """
 
   import Ecto.Query, warn: false
+  alias Extick.Orgs.OrgUser
   alias Extick.Repo
 
   alias Extick.Accounts.{User, UserToken, UserNotifier}
@@ -59,6 +60,17 @@ defmodule Extick.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+
+  def search_users_by_org_and_name(org, name \\ "") do
+    from(
+      u in User,
+      join: ou in OrgUser,
+      on: u.id == ou.user_id,
+      where: ou.org_id == ^org.id,
+      where: ilike(u.name, ^"%#{name}%")
+    )
+    |> Repo.all()
+  end
 
   ## User registration
 

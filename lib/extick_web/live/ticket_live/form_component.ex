@@ -41,6 +41,15 @@ defmodule ExtickWeb.TicketLive.FormComponent do
               type="select"
               options={priority_select_options()}
             />
+
+            <.live_component
+              parent={@myself}
+              id={@form[:assignee_id].id}
+              org={@current_org}
+              module={ExtickWeb.UserSelect}
+              label="Assignee"
+              field={@form[:assignee_id]}
+            />
           </div>
         </div>
 

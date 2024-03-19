@@ -44,11 +44,7 @@ defmodule ExtickWeb.Components.Navbar do
   defp navbar_link(assigns) do
     ~H"""
     <li>
-      <.link
-        href={@href}
-        method={@method}
-        class="text-slate-900 font-semibold hover:text-slate-500"
-      >
+      <.link href={@href} method={@method} class="text-slate-900 font-semibold hover:text-slate-500">
         <%= render_slot(@inner_block) %>
       </.link>
     </li>
