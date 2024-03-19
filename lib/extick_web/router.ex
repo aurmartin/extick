@@ -23,6 +23,7 @@ defmodule ExtickWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/avatar", AvatarController, :show
   end
 
   # Other scopes may use custom stacks.

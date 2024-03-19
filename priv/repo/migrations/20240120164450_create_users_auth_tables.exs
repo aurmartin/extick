@@ -10,6 +10,7 @@ defmodule PostgresTest.Repo.Migrations.CreateUsersAuthTables do
       add :name, :string, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
+      add :avatar_url, :string
       timestamps(type: :utc_datetime)
     end
 

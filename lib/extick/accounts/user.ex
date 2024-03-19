@@ -10,6 +10,8 @@ defmodule Extick.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    field :avatar_url, :string
+
     many_to_many :orgs, Extick.Orgs.Org, join_through: Extick.Orgs.OrgUser
 
     timestamps(type: :utc_datetime)

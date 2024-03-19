@@ -89,7 +89,36 @@ defmodule Extick.Accounts do
   def register_user(attrs) do
     %User{}
     |> User.registration_changeset(attrs)
+    |> maybe_generate_avatar_url()
     |> Repo.insert()
+  end
+
+  defp maybe_generate_avatar_url(%Ecto.Changeset{valid?: true} = changeset) do
+    name = Ecto.Changeset.get_field(changeset, :name)
+    email = Ecto.Changeset.get_field(changeset, :email)
+
+    query = %{name: name, color: random_avatar_color(email)}
+
+    uri =
+      URI.new!("/avatar")
+      |> URI.append_query(URI.encode_query(query))
+      |> URI.to_string()
+
+    Ecto.Changeset.put_change(changeset, :avatar_url, uri)
+  end
+
+  defp maybe_generate_avatar_url(changeset), do: changeset
+
+  @h_range [0, 360]
+  @s_range [50, 75]
+  @l_range [25, 60]
+  defp random_avatar_color(input) do
+    hash = :crypto.hash(:sha, input) |> :crypto.bytes_to_integer()
+    normalize = fn x, [min, max] -> min + rem(x, max - min + 1) end
+    h = normalize.(hash, @h_range)
+    s = normalize.(hash, @s_range)
+    l = normalize.(hash, @l_range)
+    "hsl(#{h}, #{s}%, #{l}%)"
   end
 
   @doc """

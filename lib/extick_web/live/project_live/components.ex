@@ -51,7 +51,7 @@ defmodule ExtickWeb.ProjectLive.Components do
             <h3 class="text-sm"><%= ticket.title %></h3>
 
             <%= if ticket.assignee do %>
-              <ExtickWeb.Components.AvatarIcon.avatar_icon user={ticket.assignee} class="mt-1" />
+              <img src={ticket.assignee.avatar_url} alt={ticket.assignee.name} class="w-6 h-6 rounded-full mt-1" />
             <% end %>
           </div>
         <% end %>
