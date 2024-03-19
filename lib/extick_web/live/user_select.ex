@@ -20,7 +20,7 @@ defmodule ExtickWeb.UserSelect do
 
       <div class="relative">
         <div class="relative">
-          <input type="hidden" id={@id <> "_value_input"} name={@name} />
+          <input type="hidden" id={@id <> "_value_input"} name={@name} value={if @selected, do: @selected.id} />
 
           <input
             form="disabled"

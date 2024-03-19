@@ -83,8 +83,10 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   end
 
   @impl true
-  def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, _ticket}}, socket) do
-    {:noreply, assign(socket, ticket: nil)}
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, ticket}}, socket) do
+    ticket = Extick.Repo.preload(ticket, :assignee, force: true)
+    tickets = socket.assigns.tickets |> Enum.map(&if &1.id == ticket.id, do: ticket, else: &1)
+    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end
 
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, ticket}}, socket) do
