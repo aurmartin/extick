@@ -69,6 +69,10 @@ defmodule Extick.Projects do
       set: [iteration_id: nil]
     )
     |> Repo.transaction()
+    |> case do
+      {:ok, %{iteration: iteration}} -> {:ok, iteration}
+      {:error, error} -> {:error, error}
+    end
   end
 
   def find_current_iteration(project) do

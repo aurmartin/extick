@@ -3,7 +3,7 @@ defmodule ExtickWeb.AvatarController do
 
   def show(conn, params) do
     %{"color" => color, "name" => name} = params
-    initials = String.split(name, " ") |> Enum.map(&String.at(&1, 0)) |> Enum.join()
+    initials = String.split(name, " ") |> Enum.map_join("", &String.at(&1, 0))
 
     svg = """
     <svg xmlns="http://www.w3.org/2000/svg" width="64px" height="64px" viewBox="0 0 64 64">

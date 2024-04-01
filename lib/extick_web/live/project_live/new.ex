@@ -10,13 +10,13 @@ defmodule ExtickWeb.ProjectLive.New do
 
   @impl true
   def handle_event("select_type", %{"type" => type}, socket) do
-    %{current_org_id: current_org_id} = socket.assigns
+    %{current_org: current_org} = socket.assigns
 
     {:noreply,
      socket
      |> assign(
        step: :enter_details,
-       project: %Projects.Project{type: type, org_id: current_org_id}
+       project: %Projects.Project{type: type, org_id: current_org.id}
      )}
   end
 end

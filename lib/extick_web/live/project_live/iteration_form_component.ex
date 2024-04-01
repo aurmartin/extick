@@ -60,7 +60,7 @@ defmodule ExtickWeb.ProjectLive.IterationFormComponent do
   defp save_iteration(socket, :edit, iteration_params) do
     case Projects.update_iteration(socket.assigns.iteration, iteration_params) do
       {:ok, iteration} ->
-        notify_parent({:saved, iteration})
+        notify_parent({:updated, iteration})
 
         {:noreply,
          socket
@@ -75,7 +75,7 @@ defmodule ExtickWeb.ProjectLive.IterationFormComponent do
   defp save_iteration(socket, :new, iteration_params) do
     case Projects.create_iteration(iteration_params) do
       {:ok, iteration} ->
-        notify_parent({:saved, iteration})
+        notify_parent({:created, iteration})
 
         {:noreply,
          socket

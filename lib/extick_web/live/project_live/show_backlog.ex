@@ -124,16 +124,20 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     iteration = socket.assigns.iterations |> Enum.find(&(&1.id == iteration_id))
     {:ok, iteration} = Projects.complete_iteration(iteration)
 
-    iterations =
-      socket.assigns.iterations |> Enum.map(&if &1.id == iteration_id, do: iteration, else: &1)
+    iterations = socket.assigns.iterations |> Enum.filter(&(&1.id != iteration.id))
 
     {:noreply, socket |> assign(iterations: iterations) |> update_tickets()}
   end
 
   @impl true
-  def handle_info({ExtickWeb.TicketLive.FormComponent, {:saved, ticket}}, socket) do
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:updated, ticket}}, socket) do
     tickets = socket.assigns.tickets |> Enum.map(&if &1.id == ticket.id, do: ticket, else: &1)
-    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+    {:noreply, assign(socket, tickets: tickets)}
+  end
+
+  def handle_info({ExtickWeb.TicketLive.FormComponent, {:created, ticket}}, socket) do
+    tickets = [ticket | socket.assigns.tickets]
+    {:noreply, assign(socket, tickets: tickets)}
   end
 
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, ticket}}, socket) do
@@ -141,10 +145,15 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
     {:noreply, assign(socket, tickets: tickets, ticket: nil)}
   end
 
-  def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:saved, iteration}}, socket) do
+  def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:updated, iteration}}, socket) do
     iterations =
       socket.assigns.iterations |> Enum.map(&if &1.id == iteration.id, do: iteration, else: &1)
 
+    {:noreply, assign(socket, iterations: iterations, iteration: nil)}
+  end
+
+  def handle_info({ExtickWeb.ProjectLive.IterationFormComponent, {:created, iteration}}, socket) do
+    iterations = [iteration | socket.assigns.iterations]
     {:noreply, assign(socket, iterations: iterations, iteration: nil)}
   end
 

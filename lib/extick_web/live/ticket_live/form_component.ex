@@ -11,7 +11,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
       <.form for={@form} id="ticket-form" phx-target={@myself} phx-change="validate" phx-submit="save">
         <div class="flex mb-4">
           <div class="w-2/3 space-y-4 pr-8">
-            <.input field={@form[:title]} type="ticket-title" placeholder="Title" />
+            <.input field={@form[:title]} type="ticket-title" phx-debounce="300" placeholder="Title" />
 
             <div class="grid grid-cols-2 gap-4">
               <.input
@@ -30,7 +30,12 @@ defmodule ExtickWeb.TicketLive.FormComponent do
               />
             </div>
 
-            <.input field={@form[:description]} type="textarea" label="Description" />
+            <.input
+              field={@form[:description]}
+              phx-debounce="300"
+              type="textarea"
+              label="Description"
+            />
           </div>
 
           <div class="w-1/3 space-y-4 pt-4 px-8">
@@ -53,10 +58,15 @@ defmodule ExtickWeb.TicketLive.FormComponent do
           </div>
         </div>
 
-        <.button phx-disable-with="Deleting..." phx-target={@myself} phx-click={JS.push("delete")}>
-          Delete Ticket
-        </.button>
-        <.button phx-disable-with="Saving...">Save Ticket</.button>
+        <%= if @action == :edit do %>
+          <.button phx-disable-with="Saving..." phx-target={@myself} phx-click={JS.push("delete")}>
+            Delete Ticket
+          </.button>
+        <% end %>
+
+        <%= if @action == :new do %>
+          <.button phx-disable-with="Saving...">Save Ticket</.button>
+        <% end %>
       </.form>
 
       <%= if @action == :edit do %>
@@ -129,6 +139,10 @@ defmodule ExtickWeb.TicketLive.FormComponent do
       |> Tickets.change_ticket(ticket_params)
       |> Map.put(:action, :validate)
 
+    if socket.assigns.action == :edit do
+      save_ticket(socket, socket.assigns.action, ticket_params)
+    end
+
     {:noreply, assign_form(socket, changeset)}
   end
 
@@ -184,7 +198,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
   defp save_ticket(socket, :edit, ticket_params) do
     case Tickets.update_ticket(socket.assigns.ticket, ticket_params) do
       {:ok, ticket} ->
-        notify_parent({:saved, ticket})
+        notify_parent({:updated, ticket})
 
         {:noreply,
          socket
@@ -201,7 +215,7 @@ defmodule ExtickWeb.TicketLive.FormComponent do
 
     case Tickets.create_ticket(project, ticket_params) do
       {:ok, ticket} ->
-        notify_parent({:saved, ticket})
+        notify_parent({:created, ticket})
 
         {:noreply,
          socket

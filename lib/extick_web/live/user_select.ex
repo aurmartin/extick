@@ -20,7 +20,12 @@ defmodule ExtickWeb.UserSelect do
 
       <div class="relative">
         <div class="relative">
-          <input type="hidden" id={@id <> "_value_input"} name={@name} value={if @selected, do: @selected.id} />
+          <input
+            type="hidden"
+            id={@id <> "_value_input"}
+            name={@name}
+            value={if @selected, do: @selected.id}
+          />
 
           <input
             form="disabled"
@@ -51,7 +56,11 @@ defmodule ExtickWeb.UserSelect do
               <p class="p-2 text-sm">No results</p>
             <% else %>
               <%= for user <- @users do %>
-                <div class="p-1 cursor-default hover:bg-gray-200 text-sm flex items-center" data-id={user.id}>
+                <div
+                  class="p-1 cursor-default hover:bg-gray-200 text-sm flex items-center"
+                  data-id={user.id}
+                  data-text={user.name}
+                >
                   <img src={user.avatar_url} alt={user.name} class="w-5 h-5 mr-1" />
                   <%= user.name %>
                 </div>
