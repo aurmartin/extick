@@ -1,8 +1,8 @@
 defmodule Extick.Projects.Project do
   use Ecto.Schema
   import Ecto.Changeset
-  @primary_key {:id, Ecto.UUID, autogenerate: true}
-  @foreign_key_type Ecto.UUID
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "projects" do
     field :name, :string
     field :description, :string

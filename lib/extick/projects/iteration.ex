@@ -1,7 +1,10 @@
 defmodule Extick.Projects.Iteration do
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query, warn: false
+
+  alias Extick.Projects.Project
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
@@ -35,12 +38,10 @@ defmodule Extick.Projects.Iteration do
     ["planned", "active", "completed"]
   end
 
-  def current_iteration_query(project) do
+  def current_iteration_query(%Project{} = project) do
     from(i in Extick.Projects.Iteration,
       where: i.project_id == ^project.id,
-      where: i.status == "active",
-      order_by: [desc: i.start_date],
-      limit: 1
+      where: i.status == "active"
     )
   end
 

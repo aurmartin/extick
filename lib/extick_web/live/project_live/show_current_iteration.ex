@@ -1,8 +1,7 @@
 defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   use ExtickWeb, {:live_view, layout: :project}
 
-  alias Extick.Tickets
-  alias Extick.Projects
+  alias Extick.{Tickets, Projects, Events}
 
   import ExtickWeb.ProjectLive.Components
 
@@ -19,6 +18,8 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
       else
         []
       end
+
+    :ok = Tickets.tickets_subscribe(project)
 
     {:ok,
      assign(socket,
@@ -77,32 +78,85 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
 
     {:ok, ticket} = Tickets.update_ticket(ticket, %{status: new_status})
 
-    tickets = Enum.map(socket.assigns.tickets, fn t -> if t.id == id, do: ticket, else: t end)
-
-    {:noreply, assign(socket, tickets: tickets)}
+    {:noreply, maybe_update_ticket(socket, ticket)}
   end
 
   @impl true
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:updated, ticket}}, socket) do
-    ticket = Extick.Repo.preload(ticket, :assignee, force: true)
-    tickets = socket.assigns.tickets |> Enum.map(&if &1.id == ticket.id, do: ticket, else: &1)
-    {:noreply, assign(socket, tickets: tickets)}
+    {:noreply, maybe_update_ticket(socket, ticket)}
   end
 
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:created, ticket}}, socket) do
-    ticket = Extick.Repo.preload(ticket, :assignee, force: true)
-    tickets = [ticket | socket.assigns.tickets]
-    {:noreply, assign(socket, tickets: tickets)}
+    {:noreply, maybe_add_to_assigns(socket, ticket)}
   end
 
   def handle_info({ExtickWeb.TicketLive.FormComponent, {:deleted, ticket}}, socket) do
-    tickets = socket.assigns.tickets |> Enum.reject(&(&1.id == ticket.id))
-    {:noreply, assign(socket, tickets: tickets, ticket: nil)}
+    {:noreply, remove_ticket(socket, ticket)}
+  end
+
+  def handle_info({Extick.Tickets, %Events.TicketUpdated{ticket: ticket}}, socket) do
+    {:noreply,
+     socket
+     |> maybe_add_to_assigns(ticket)
+     |> maybe_update_ticket(ticket)
+     |> maybe_remove_ticket(ticket)}
+  end
+
+  def handle_info({Extick.Tickets, %Events.TicketAdded{ticket: ticket}}, socket) do
+    {:noreply, maybe_add_to_assigns(socket, ticket)}
+  end
+
+  def handle_info({Extick.Tickets, %Events.TicketDeleted{ticket: ticket}}, socket) do
+    {:noreply, remove_ticket(socket, ticket)}
   end
 
   def handle_info({Extick.Tickets, %_event{comment: comment} = event}, socket) do
     send_update(ExtickWeb.TicketLive.FormComponent, id: comment.ticket_id, event: event)
     {:noreply, socket}
+  end
+
+  # Assigns update helpers
+
+  defp maybe_add_to_assigns(socket, ticket) do
+    if in_iteration?(socket, ticket) && !has_ticket?(socket, ticket) do
+      update(socket, :tickets, &[ticket | &1])
+    else
+      socket
+    end
+  end
+
+  defp has_ticket?(socket, ticket) do
+    Enum.find_index(socket.assigns.tickets, &(&1.id == ticket.id))
+  end
+
+  defp in_iteration?(socket, ticket) do
+    ticket.iteration_id == socket.assigns.iteration.id
+  end
+
+  defp maybe_update_ticket(socket, ticket) do
+    if in_iteration?(socket, ticket) do
+      update(socket, :tickets, fn tickets ->
+        Enum.map(tickets, &if(&1.id == ticket.id, do: ticket, else: &1))
+      end)
+    else
+      socket
+    end
+  end
+
+  defp maybe_remove_ticket(socket, ticket) do
+    if !in_iteration?(socket, ticket) do
+      update(socket, :tickets, fn tickets ->
+        Enum.reject(tickets, &(&1.id == ticket.id))
+      end)
+    else
+      socket
+    end
+  end
+
+  defp remove_ticket(socket, ticket) do
+    update(socket, :tickets, fn tickets ->
+      Enum.reject(tickets, &(&1.id == ticket.id))
+    end)
   end
 
   defp page_title(:show), do: "Backlog"

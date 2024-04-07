@@ -1,15 +1,24 @@
 defmodule Extick.Tickets do
-  @moduledoc """
-  The Tickets context.
-  """
-
   import Ecto.Query, warn: false
 
-  alias Extick.Repo
-  alias Extick.Events
+  alias Extick.{Repo, Events}
+  alias Extick.Tickets.{Ticket, Comment}
   alias Extick.Accounts.User
-  alias Extick.Tickets.Ticket
   alias Extick.Projects.Project
+
+  # Tickets
+
+  def tickets_subscribe(%Project{} = project) do
+    Phoenix.PubSub.subscribe(Extick.PubSub, tickets_topic(project))
+  end
+
+  def tickets_topic(%Project{} = project) do
+    "project:#{project.id}:tickets"
+  end
+
+  def tickets_topic(%Ticket{} = ticket) do
+    "project:#{ticket.project_id}:tickets"
+  end
 
   def list_tickets do
     Repo.all(Ticket)
@@ -55,25 +64,61 @@ defmodule Extick.Tickets do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, %{ticket: ticket}} -> {:ok, ticket}
-      {:error, changeset} -> {:error, changeset}
+      {:ok, %{ticket: ticket}} ->
+        :ok =
+          Phoenix.PubSub.broadcast(
+            Extick.PubSub,
+            tickets_topic(ticket),
+            {__MODULE__, %Events.TicketAdded{ticket: ticket}}
+          )
+
+        {:ok, ticket}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 
   def update_ticket(%Ticket{} = ticket, attrs) do
-    ticket
-    |> Repo.preload(:project)
-    |> Ticket.update_changeset(attrs)
-    |> Repo.update()
-  end
+    changeset =
+      ticket
+      |> Repo.preload(:project)
+      |> Ticket.update_changeset(attrs)
 
-  def delete_all_tickets(project_id) do
-    query = from(t in Ticket, where: t.project_id == ^project_id)
-    Repo.delete_all(query)
+    changeset
+    |> Repo.update()
+    |> case do
+      {:ok, ticket} ->
+        :ok =
+          Phoenix.PubSub.broadcast(
+            Extick.PubSub,
+            tickets_topic(ticket),
+            {__MODULE__, %Events.TicketUpdated{ticket: ticket, changeset: changeset}}
+          )
+
+        {:ok, ticket}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   def delete_ticket(%Ticket{} = ticket) do
     Repo.delete(ticket)
+    |> case do
+      {:ok, ticket} ->
+        :ok =
+          Phoenix.PubSub.broadcast(
+            Extick.PubSub,
+            tickets_topic(ticket),
+            {__MODULE__, %Events.TicketDeleted{ticket: ticket}}
+          )
+
+        {:ok, ticket}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   def change_ticket(%Ticket{} = ticket, attrs \\ %{}) do
@@ -117,7 +162,7 @@ defmodule Extick.Tickets do
     end
   end
 
-  alias Extick.Tickets.Comment
+  # Ticket comments
 
   def comments_subscribe(%Ticket{} = ticket) do
     Phoenix.PubSub.subscribe(Extick.PubSub, comments_topic(ticket))

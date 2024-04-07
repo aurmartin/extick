@@ -44,6 +44,23 @@ defmodule Extick.Projects do
 
   # Iterations
 
+  # Database getters
+
+  def get_iteration!(id) when is_binary(id), do: Repo.get!(Iteration, id)
+
+  def find_current_iteration(%Project{} = project) do
+    Iteration.current_iteration_query(project)
+    |> Repo.one()
+  end
+
+  def list_iterations_by_project_and_statuses(project_id, statuses)
+      when is_binary(project_id) and is_list(statuses) do
+    Iteration.list_by_project_query_and_statuses(project_id, statuses)
+    |> Repo.all()
+  end
+
+  # Database updates
+
   def create_iteration(attrs \\ %{}) do
     %Iteration{}
     |> Iteration.creation_changeset(attrs)
@@ -74,16 +91,4 @@ defmodule Extick.Projects do
       {:error, error} -> {:error, error}
     end
   end
-
-  def find_current_iteration(project) do
-    Iteration.current_iteration_query(project)
-    |> Repo.one()
-  end
-
-  def list_iterations_by_project_and_statuses(project_id, statuses) do
-    Iteration.list_by_project_query_and_statuses(project_id, statuses)
-    |> Repo.all()
-  end
-
-  def get_iteration!(id), do: Repo.get!(Iteration, id)
 end

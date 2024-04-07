@@ -103,6 +103,12 @@ defmodule ExtickWeb.ProjectLive.ShowBacklog do
       "oldIteration" => _old_iteration
     } = params
 
+    new_iteration =
+      case new_iteration do
+        "backlog" -> nil
+        _ -> new_iteration
+      end
+
     ticket = socket.assigns.tickets |> Enum.find(&(&1.id == id))
     {:ok, ticket} = Tickets.update_ticket(ticket, %{iteration_id: new_iteration})
     tickets = socket.assigns.tickets |> Enum.map(&if &1.id == id, do: ticket, else: &1)

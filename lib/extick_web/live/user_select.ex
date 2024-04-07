@@ -87,7 +87,7 @@ defmodule ExtickWeb.UserSelect do
       |> assign_new(:name, fn -> field.name end)
       |> assign_new(:value, fn -> field.value end)
       |> assign_new(:users, fn ->
-        Accounts.search_users_by_org_and_name(org)
+        Accounts.get_users_by_org_and_name(org)
       end)
 
     selected = Enum.find(socket.assigns.users, &(&1.id == field.value))
@@ -98,7 +98,7 @@ defmodule ExtickWeb.UserSelect do
 
   @impl true
   def handle_event("change", %{"value" => value}, socket) do
-    users = Accounts.search_users_by_org_and_name(socket.assigns.org, value)
+    users = Accounts.get_users_by_org_and_name(socket.assigns.org, value)
     {:noreply, assign(socket, users: users)}
   end
 end
