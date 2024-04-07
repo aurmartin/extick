@@ -1,18 +1,33 @@
 <.flash_group flash={@flash} />
-<div class="bg-teal-50 h-full pt-28">
-  <section class="font-light max-w-32 text-2xl text-center">
+<div class="bg-[#E3FEF7] h-full pt-28">
+  <section class="font-light max-w-32 text-2xl text-center px-6">
     <h1 class="font-semibold mb-8 text-6xl">ExTick.</h1>
 
     <p class="mb-2">ExTick is a simple and fast project management system based on boards.</p>
     <p>This is a toy project, don't really use to manage your projects.</p>
   </section>
 
-  <section class="mt-28 text-center">
+  <section class="mt-20 text-center">
     <.link
       href={~p"/users/register"}
       class="bg-green-600 text-2xl text-white border-2 border-green-800 rounded py-4 px-6 shadow-lg shadow-gray-400 transition-all hover:shadow-xl hover:bg-green-700 hover:shadow-gray-400 active:shadow-gray-400 active:shadow-lg inline-flex items-center"
     >
       Get started <.icon name="hero-arrow-right" class="ml-2 h-6 w-6" />
     </.link>
+  </section>
+
+  <section class="mt-20 bg-[#cdeae8] p-16">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl mb-8 font-light">Everything in ExTick is live updating.</h2>
+      <p class="mb-8 text-lg text-gray-600">Enjoy blazzingly fast live update of everything you see. No more delay or manual refresh:</p>
+      <img src={~p"/images/demo.gif"} class="mx-auto border rounded-md shadow-md shadow-slate-500" alt="Live demo of ExTick">
+    </div>
+  </section>
+
+  <section class="bg-[#E3FEF7] p-16 pb-2">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl mb-8 font-light">Suits every team organization.</h2>
+      <p class="mb-4 text-lg text-gray-600">With ExTick you can use many project types like Scrum or Kanban.</p>
+    </div>
   </section>
 </div>

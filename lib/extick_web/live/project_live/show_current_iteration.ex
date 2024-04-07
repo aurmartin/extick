@@ -1,7 +1,7 @@
 defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   use ExtickWeb, {:live_view, layout: :project}
 
-  alias Extick.{Tickets, Projects, Events}
+  alias Extick.{Tickets, Projects, Events, Repo}
 
   import ExtickWeb.ProjectLive.Components
 
@@ -119,6 +119,7 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
 
   defp maybe_add_to_assigns(socket, ticket) do
     if in_iteration?(socket, ticket) && !has_ticket?(socket, ticket) do
+      ticket = Repo.preload(ticket, :assignee)
       update(socket, :tickets, &[ticket | &1])
     else
       socket
@@ -136,7 +137,8 @@ defmodule ExtickWeb.ProjectLive.ShowCurrentIteration do
   defp maybe_update_ticket(socket, ticket) do
     if in_iteration?(socket, ticket) do
       update(socket, :tickets, fn tickets ->
-        Enum.map(tickets, &if(&1.id == ticket.id, do: ticket, else: &1))
+        # TODO: Optimize preloading. Right now, we load assignee in maybe_add_to_assigns and here
+        Enum.map(tickets, &if(&1.id == ticket.id, do: Repo.preload(ticket, :assignee), else: &1))
       end)
     else
       socket
