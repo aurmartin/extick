@@ -1,4 +1,4 @@
 #!/bin/sh
 cd -P -- "$(dirname -- "$0")"
-exec ./extick eval Extick.Release.migrate
+./extick eval Extick.Release.migrate
 PHX_SERVER=true exec ./extick start
