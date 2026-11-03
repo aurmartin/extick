@@ -14,8 +14,6 @@ defmodule Extick.Application do
        repos: Application.fetch_env!(:extick, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:extick, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Extick.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: Extick.Finch},
       # Start a worker by calling: Extick.Worker.start_link(arg)
       # {Extick.Worker, arg},
       # Start to serve requests, typically the last entry

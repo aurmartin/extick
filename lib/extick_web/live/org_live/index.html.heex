@@ -12,7 +12,7 @@
   rows={@streams.orgs}
   row_click={fn {_id, org} -> JS.navigate(~p"/orgs/#{org.id}/select") end}
 >
-  <:col :let={{_id, org}} label="Organization"><%= org.name %></:col>
+  <:col :let={{_id, org}} label="Organization">{org.name}</:col>
 </.table>
 
 <.modal :if={@live_action in [:new]} id="org-modal" show on_cancel={JS.patch(~p"/orgs")}>

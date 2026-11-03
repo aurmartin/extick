@@ -1,5 +1,5 @@
 <.header>
-  Iteration <%= @iteration && @iteration.name %>
+  Iteration {@iteration && @iteration.name}
 
   <:actions>
     <.link patch={~p"/projects/#{@project}/current_iteration/new_ticket"}>
@@ -15,7 +15,7 @@
     <.board_column status="done" tickets={@tickets} project={@project} />
   </div>
 <% else %>
-  <p class="mt-4 p-4 border border-gray-400 bg-gray-100 text-gray-800 rounded text-center">
+  <p class="mt-4 p-4 border border-gray-400 bg-gray-100 text-gray-800 rounded-sm text-center">
     You don't have an active iteration. Please create one in the
     <.link class="underline" navigate={~p"/projects/#{@project}/backlog"}>backlog</.link>
     screen.

@@ -20,6 +20,24 @@ if System.get_env("PHX_SERVER") do
   config :extick, ExtickWeb.Endpoint, server: true
 end
 
+config :extick, ExtickWeb.Endpoint,
+  http: [port: String.to_integer(System.get_env("PORT", "4000"))]
+
+if config_env() == :dev do
+  # Reload browser tabs when matching files change.
+  config :extick, ExtickWeb.Endpoint,
+    live_reload: [
+      web_console_logger: true,
+      patterns: [
+        # Static assets, except user uploads
+        ~r"priv/static/(?!uploads/).*\.(js|css|png|jpeg|jpg|gif|svg)$"E,
+        # Router, Controllers, LiveViews and LiveComponents
+        ~r"lib/extick_web/router\.ex$"E,
+        ~r"lib/extick_web/(controllers|live|components)/.*\.(ex|heex)$"E
+      ]
+    ]
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -34,6 +52,8 @@ if config_env() == :prod do
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    # For machines with several cores, consider starting multiple pools of `pool_size`
+    # pool_count: 4,
     socket_options: maybe_ipv6
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
@@ -49,15 +69,14 @@ if config_env() == :prod do
       """
 
   host = System.get_env("PHX_HOST") || "example.com"
-  port = String.to_integer(System.get_env("PORT") || "4000")
   ip_string = System.get_env("BIND_IP") || "127.0.0.1"
-  {:ok, ip} = :inet.parse_address('#{ip_string}')
+  {:ok, ip} = :inet.parse_address(String.to_charlist(ip_string))
 
   config :extick, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :extick, ExtickWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
-    http: [ip: ip, port: port],
+    http: [ip: ip],
     secret_key_base: secret_key_base
 
   # ## SSL Support
@@ -82,10 +101,10 @@ if config_env() == :prod do
   # `:keyfile` and `:certfile` expect an absolute path to the key
   # and cert in disk or a relative path inside priv, for example
   # "priv/ssl/server.key". For all supported SSL configuration
-  # options, see https://hexdocs.pm/plug/Plug.SSL.html#configure/1
+  # options, see https://plug.hexdocs.pm/Plug.SSL.html#configure/1
   #
-  # We also recommend setting `force_ssl` in your endpoint, ensuring
-  # no data is ever sent via http, always redirecting to https:
+  # We also recommend setting `force_ssl` in your config/prod.exs,
+  # ensuring no data is ever sent via http, always redirecting to https:
   #
   #     config :extick, ExtickWeb.Endpoint,
   #       force_ssl: [hsts: true]
@@ -95,18 +114,18 @@ if config_env() == :prod do
   # ## Configuring the mailer
   #
   # In production you need to configure the mailer to use a different adapter.
-  # Also, you may need to configure the Swoosh API client of your choice if you
-  # are not using SMTP. Here is an example of the configuration:
+  # Here is an example configuration for Mailgun:
   #
   #     config :extick, Extick.Mailer,
   #       adapter: Swoosh.Adapters.Mailgun,
   #       api_key: System.get_env("MAILGUN_API_KEY"),
   #       domain: System.get_env("MAILGUN_DOMAIN")
   #
-  # For this example you need include a HTTP client required by Swoosh API client.
-  # Swoosh supports Hackney and Finch out of the box:
+  # Most non-SMTP adapters require an API client. Swoosh supports Req, Hackney,
+  # and Finch out-of-the-box. This configuration is typically done at
+  # compile-time in your config/prod.exs:
   #
-  #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
+  #     config :swoosh, :api_client, Swoosh.ApiClient.Req
   #
-  # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  # See https://swoosh.hexdocs.pm/Swoosh.html#module-installation for details.
 end

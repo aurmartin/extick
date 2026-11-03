@@ -8,7 +8,7 @@ defmodule ExtickWeb.ProjectLive.FormComponent do
     ~H"""
     <div>
       <.header>
-        <%= @title %>
+        {@title}
         <:subtitle>Use this form to manage project records in your database.</:subtitle>
       </.header>
 

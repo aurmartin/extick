@@ -15,8 +15,8 @@ defmodule ExtickWeb.UserSelect do
   @impl true
   def render(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} phx-hook="Select" id={@id}>
-      <.label for={@id}><%= @label %></.label>
+    <div phx-hook="Select" id={@id}>
+      <.label for={@id}>{@label}</.label>
 
       <div class="relative">
         <div class="relative">
@@ -34,8 +34,7 @@ defmodule ExtickWeb.UserSelect do
             autocomplete="off"
             value={if @selected, do: @selected.name}
             class={[
-              "py-1 px-2 mt-1 block w-full rounded border focus:ring-0 sm:text-sm sm:leading-6",
-              "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
+              "py-1 px-2 mt-1 block w-full rounded-sm border focus:ring-0 sm:text-sm sm:leading-6",
               "cursor-default",
               @errors == [] && "border-zinc-300 focus:border-zinc-400",
               @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -49,7 +48,7 @@ defmodule ExtickWeb.UserSelect do
 
         <div
           id={@id <> "_select"}
-          class="absolute w-full top-[100%] border border-zinc-300 rounded shadow-md my-2 bg-white hidden"
+          class="absolute w-full top-[100%] border border-zinc-300 rounded-sm shadow-md my-2 bg-white hidden"
         >
           <div class="relative max-height-[300px] overflow-y-auto py-1">
             <%= if Enum.empty?(@users) do %>
@@ -62,7 +61,7 @@ defmodule ExtickWeb.UserSelect do
                   data-text={user.name}
                 >
                   <img src={user.avatar_url} alt={user.name} class="w-5 h-5 mr-1" />
-                  <%= user.name %>
+                  {user.name}
                 </div>
               <% end %>
             <% end %>
@@ -70,7 +69,7 @@ defmodule ExtickWeb.UserSelect do
         </div>
       </div>
 
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -78,12 +77,13 @@ defmodule ExtickWeb.UserSelect do
   @impl true
   def update(assigns, socket) do
     %{field: field, org: org} = assigns
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
     socket =
       socket
       |> assign(assigns)
       |> assign(field: nil, id: assigns.id || field.id)
-      |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+      |> assign(:errors, Enum.map(errors, &translate_error(&1)))
       |> assign_new(:name, fn -> field.name end)
       |> assign_new(:value, fn -> field.value end)
       |> assign_new(:users, fn ->

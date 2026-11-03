@@ -8,12 +8,12 @@ defmodule ExtickWeb.Components.Navbar do
     ~H"""
     <ul class="fixed top-0 left-0 z-10 w-full flex items-center gap-4 h-[60px] px-4 sm:px-6 lg:px-8 border-b-2 border-slate-300 bg-white">
       <%= if @current_org do %>
-        <li class="text-slate-900"><%= @current_org.name %></li>
+        <li class="text-slate-900">{@current_org.name}</li>
         <.navbar_link href={~p"/projects"}>Projects</.navbar_link>
       <% end %>
 
       <li class="text-slate-900 ml-auto">
-        <%= @current_user.email %>
+        {@current_user.email}
       </li>
 
       <.navbar_link href={~p"/users/settings"}>Settings</.navbar_link>
@@ -45,7 +45,7 @@ defmodule ExtickWeb.Components.Navbar do
     ~H"""
     <li>
       <.link href={@href} method={@method} class="text-slate-900 font-semibold hover:text-slate-500">
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </.link>
     </li>
     """

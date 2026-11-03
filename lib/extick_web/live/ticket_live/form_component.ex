@@ -85,9 +85,9 @@ defmodule ExtickWeb.TicketLive.FormComponent do
         <%= for comment <- @comments do %>
           <div class="mt-4">
             <p class="text-sm mb-1">
-              <%= comment.author.name %>, <.local_time id={comment.id} date={comment.inserted_at} />
+              {comment.author.name}, <.local_time id={comment.id} date={comment.inserted_at} />
             </p>
-            <p class="rounded p-2 bg-gray-100"><%= comment.content %></p>
+            <p class="rounded-sm p-2 bg-gray-100">{comment.content}</p>
           </div>
         <% end %>
       <% end %>

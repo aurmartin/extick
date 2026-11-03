@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     # Keep in sync with the builder image in the Dockerfile
-    container: hexpm/elixir:1.18.3-erlang-27.3.3-debian-trixie-20260610-slim
+    container: hexpm/elixir:1.20.5-erlang-29.1.2-debian-trixie-20261027-slim
     services:
       postgres:
         image: postgres:17
@@ -37,8 +37,8 @@ jobs:
           path: |
             deps
             _build
-          key: mix-debian-trixie-20260610-${{ hashFiles('mix.lock') }}
-          restore-keys: mix-debian-trixie-20260610-
+          key: mix-debian-trixie-20261027-${{ hashFiles('mix.lock') }}
+          restore-keys: mix-debian-trixie-20261027-
 
       - name: Install dependencies
         run: |

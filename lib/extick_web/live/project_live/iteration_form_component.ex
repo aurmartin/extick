@@ -8,7 +8,7 @@ defmodule ExtickWeb.ProjectLive.IterationFormComponent do
     ~H"""
     <div>
       <.header>
-        <%= @title %>
+        {@title}
       </.header>
 
       <.simple_form

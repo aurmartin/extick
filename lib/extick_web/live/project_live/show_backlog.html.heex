@@ -21,13 +21,13 @@
         &if(iteration, do: &1.iteration_id == iteration.id, else: &1.iteration_id == nil)
       ) %>
 
-    <div class="border border-zinc-400 rounded p-2">
+    <div class="border border-zinc-400 rounded-sm p-2">
       <%= if iteration do %>
         <div class="flex">
           <h2 class="font-semibold">
-            <%= iteration.name %>
+            {iteration.name}
             <span class="text-gray-700 text-sm font-normal">
-              (<%= length(tickets) %> tickets)
+              ({length(tickets)} tickets)
             </span>
           </h2>
 
@@ -54,7 +54,7 @@
           <h2 class="font-semibold">
             Backlog
             <span class="text-gray-700 text-sm font-normal">
-              (<%= length(tickets) %> tickets)
+              ({length(tickets)} tickets)
             </span>
           </h2>
         </div>

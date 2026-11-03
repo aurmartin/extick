@@ -10,7 +10,7 @@ defmodule ExtickWeb.UserSettingsLive do
       <:subtitle>Manage your account email address and password settings</:subtitle>
     </.header>
 
-    <div class="space-y-12 divide-y">
+    <div class="space-y-12 divide-y divide-gray-200">
       <div>
         <.simple_form
           for={@email_form}
@@ -131,7 +131,8 @@ defmodule ExtickWeb.UserSettingsLive do
         {:noreply, socket |> put_flash(:info, info) |> assign(email_form_current_password: nil)}
 
       {:error, changeset} ->
-        {:noreply, assign(socket, :email_form, to_form(Map.put(changeset, :action, :insert)))}
+        changeset = changeset |> Map.put(:action, :insert) |> put_current_password(password)
+        {:noreply, assign(socket, :email_form, to_form(changeset))}
     end
   end
 
@@ -161,7 +162,14 @@ defmodule ExtickWeb.UserSettingsLive do
         {:noreply, assign(socket, trigger_submit: true, password_form: password_form)}
 
       {:error, changeset} ->
+        changeset = put_current_password(changeset, password)
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  # current_password is submitted outside of the "user" params, so we add it
+  # to the form params for its errors to be displayed (see used_input?/1)
+  defp put_current_password(changeset, password) do
+    Map.update!(changeset, :params, &Map.put(&1, "current_password", password))
   end
 end

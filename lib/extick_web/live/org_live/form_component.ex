@@ -8,7 +8,7 @@ defmodule ExtickWeb.OrgLive.FormComponent do
     ~H"""
     <div>
       <.header>
-        <%= @title %>
+        {@title}
         <:subtitle>You can create a new organization here.</:subtitle>
       </.header>
 
