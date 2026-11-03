@@ -4,16 +4,21 @@ defmodule Extick.OrgsFixtures do
   entities via the `Extick.Orgs` context.
   """
 
+  import Extick.AccountsFixtures
+
   @doc """
   Generate a org.
   """
   def org_fixture(attrs \\ %{}) do
+    {user, attrs} = Map.pop_lazy(Map.new(attrs), :user, fn -> user_fixture() end)
+
     {:ok, org} =
-      attrs
-      |> Enum.into(%{
-        name: "some name"
-      })
-      |> Extick.Orgs.create_org()
+      Extick.Orgs.create_org(
+        user,
+        Enum.into(attrs, %{
+          name: "some name"
+        })
+      )
 
     org
   end

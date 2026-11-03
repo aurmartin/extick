@@ -74,7 +74,7 @@ defmodule Extick.Tickets do
 
         {:ok, ticket}
 
-      {:error, changeset} ->
+      {:error, :ticket, changeset, _changes} ->
         {:error, changeset}
     end
   end

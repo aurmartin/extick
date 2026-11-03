@@ -6,13 +6,17 @@ defmodule Extick.OrgsTest do
   describe "orgs" do
     alias Extick.Orgs.Org
 
+    import Extick.AccountsFixtures
     import Extick.OrgsFixtures
 
     @invalid_attrs %{name: nil}
 
-    test "list_orgs/0 returns all orgs" do
-      org = org_fixture()
-      assert Orgs.list_orgs() == [org]
+    test "list_joined_orgs/1 returns the orgs the user is a member of" do
+      user = user_fixture()
+      org = org_fixture(user: user)
+      _other_org = org_fixture()
+
+      assert Orgs.list_joined_orgs(user.id) == [org]
     end
 
     test "get_org!/1 returns the org with given id" do
@@ -20,15 +24,16 @@ defmodule Extick.OrgsTest do
       assert Orgs.get_org!(org.id) == org
     end
 
-    test "create_org/1 with valid data creates a org" do
-      valid_attrs = %{name: "some name"}
+    test "create_org/2 with valid data creates a org with the user as member" do
+      user = user_fixture()
 
-      assert {:ok, %Org{} = org} = Orgs.create_org(valid_attrs)
+      assert {:ok, %Org{} = org} = Orgs.create_org(user, %{name: "some name"})
       assert org.name == "some name"
+      assert Orgs.list_joined_orgs(user.id) == [org]
     end
 
-    test "create_org/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Orgs.create_org(@invalid_attrs)
+    test "create_org/2 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Orgs.create_org(user_fixture(), @invalid_attrs)
     end
 
     test "update_org/2 with valid data updates the org" do

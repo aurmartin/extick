@@ -3,6 +3,6 @@ defmodule ExtickWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Peace of mind from prototype to production"
+    assert html_response(conn, 200) =~ "ExTick is a simple and fast project management system"
   end
 end
