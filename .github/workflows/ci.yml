@@ -8,13 +8,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Keep in sync with the builder image in the Dockerfile
+    container: hexpm/elixir:1.18.3-erlang-27.3.3-debian-trixie-20260610-slim
     services:
       postgres:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -22,15 +22,13 @@ jobs:
           --health-retries 5
     env:
       MIX_ENV: test
+      DATABASE_HOST: postgres
     steps:
+      - name: Install build dependencies
+        run: apt-get update -y && apt-get install -y build-essential git
+
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Elixir
-        uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
-        with:
-          elixir-version: "1.18.3"
-          otp-version: "27.3.3"
 
       - name: Cache dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -38,11 +36,14 @@ jobs:
           path: |
             deps
             _build
-          key: mix-${{ runner.os }}-${{ hashFiles('mix.lock') }}
-          restore-keys: mix-${{ runner.os }}-
+          key: mix-debian-trixie-20260610-${{ hashFiles('mix.lock') }}
+          restore-keys: mix-debian-trixie-20260610-
 
       - name: Install dependencies
-        run: mix deps.get
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
 
       - name: Run tests
         run: mix test
